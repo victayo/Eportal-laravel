@@ -30,7 +30,7 @@ return [
     ],
 
     'stripe' => [
-        'model' => Eportal\User::class,
+        'model' => Eportal\Models\User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],

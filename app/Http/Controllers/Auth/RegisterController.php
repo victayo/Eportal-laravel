@@ -2,7 +2,7 @@
 
 namespace Eportal\Http\Controllers\Auth;
 
-use Eportal\User;
+use Eportal\Models\User;
 use Eportal\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -59,7 +59,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \Eportal\User
+     * @return \Eportal\Models\User
      */
     protected function create(array $data)
     {

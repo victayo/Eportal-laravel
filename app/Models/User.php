@@ -1,6 +1,6 @@
 <?php
 
-namespace Eportal;
+namespace Eportal\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
