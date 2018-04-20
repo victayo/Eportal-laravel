@@ -8,18 +8,7 @@
             <div class="x_title">
                 <h2>Schools</h2>
                 <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false"><i class="fa fa-wrench"></i>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Settings 1</a></li>
-                            <li><a href="#">Settings 2</a></li>
-                        </ul>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+                    <li><a href="{{ route('admin.school.create') }}" class="btn btn-primary">Create New School</a> </li>
                 </ul>
                 <div class="clearfix"></div>
             </div>
@@ -53,9 +42,9 @@
                                     </div>
                                 </td>
                                 <td class="property-column-data" style="text-align: right">{{$loop->index + 1}}</td>
-                                <td class="property-column-data" style="text-align: right">{{ $school->getName() }}</td>
+                                    <td class="property-column-data" style="text-align: right"><a href="{{ route('admin.school.classes', ['school' => $school->getId()]) }}">{{ $school->getName() }}</a></td>
                                 <td class="property-column-data", style="text-align: right">
-                                    <a class="btn btn-default" href="{{ route('admin.school.edit') }}">Edit</a>
+                                    <a class="btn btn-default" href="{{ route('admin.school.edit', ['school' => $school->getId()]) }}">Edit</a>
                                     <a class="btn btn-danger" href="{{ route('admin.school.delete') }}">Delete</a>
                                 </td>
                             </tr>
