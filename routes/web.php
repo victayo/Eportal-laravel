@@ -41,4 +41,24 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function(){
         Route::match(['get', 'post'], 'department/add', 'ClassController@addDepartments')->name('admin.class.addDepartment');
         Route::post('department/remove', 'ClassController@removeDepartments')->name('admin.class.removeDepartment');
     });
+
+    //============================ DEPARTMENTS ===========================================
+    Route::group(['prefix' => 'department'], function(){
+        Route::get('/', 'DepartmentController@index')->name('admin.department.index');
+        Route::match(['get', 'post'], 'create', 'DepartmentController@store')->name('admin.department.create');
+        Route::match(['get', 'post'], 'edit/{department}', 'DepartmentController@update')->name('admin.department.edit');
+        Route::post('delete', 'DepartmentController@delete')->name('admin.department.delete');
+
+        Route::get('/department', 'DepartmentController@getSubjects')->name('admin.department.subjects');
+        Route::match(['get', 'post'], 'subject/add', 'DepartmentController@addSubjects')->name('admin.department.addSubject');
+        Route::post('subject/remove', 'DepartmentController@removeSubjects')->name('admin.department.removeSubject');
+    });
+
+    //============================ SUBJECTS ===========================================
+    Route::group(['prefix' => 'subject'], function(){
+        Route::get('/', 'SubjectController@index')->name('admin.subject.index');
+        Route::match(['get', 'post'], 'create', 'SubjectController@store')->name('admin.subject.create');
+        Route::match(['get', 'post'], 'edit/{subject}', 'SubjectController@update')->name('admin.subject.edit');
+        Route::post('delete', 'SubjectController@delete')->name('admin.subject.delete');
+    });
 });

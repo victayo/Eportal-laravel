@@ -1,19 +1,19 @@
 @extends('admin.admin')
-@section('title', 'Class')
-@section('page-title', 'Class - '.ucwords($class->getName()))
+@section('title', 'Department')
+@section('page-title', 'Department - '.ucwords($department->getName()))
 @section('content')
     <div class="row">
         <div class="col-md-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2> {{ ucwords($class->getName()) }} Departments</h2>
+                    <h2> {{ ucwords($department->getName()) }} Subjects</h2>
                     <ul class="nav navbar-right panel_toolbox">
-                        <li><a href="{{ route('admin.class.addDepartment', ['school' => $school->getId(), 'class' => $class->getId()]) }}" class="btn btn-primary">Add Department</a> </li>
+                        <li><a href="{{ route('admin.department.addSubject', ['school' => $school->getId(), 'class' => $class->getId(), 'department' => $department->getId()]) }}" class="btn btn-primary">Add Subject</a> </li>
                     </ul>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    @if($departments->count())
+                    @if($subjects->count())
                     <div class="table-responsive">
                         <table class="table table-striped jambo_table bulk_action">
                             <thead>
@@ -30,7 +30,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($departments as $department)
+                            @foreach($subjects as $subject)
                                 @if($loop->index % 2)
                                     <tr class="even pointer">
                                 @else
@@ -44,12 +44,10 @@
                                         </td>
                                         <td class="property-column-data" style="text-align: right">{{$loop->index + 1}}</td>
                                         <td class="property-column-data" style="text-align: right">
-                                            <a href="{{ route('admin.department.subjects', ['school' => $school->getId(), 'class' => $class->getId(), 'department' => $department->getId()]) }}">
-                                                {{ $department->getName() }}
-                                            </a>
+                                                {{ $subject->getName() }}
                                         </td>
                                         <td class="property-column-data", style="text-align: right">
-                                            <button class="btn btn-danger remove-class" href="{{ route('admin.class.removeDepartment') }}" data-school="{{$school->getId() }}" data-eportal_class="{{ $class->getId() }}" data-department="{{ $department->getId() }}">Remove</button>
+                                            <button class="btn btn-danger remove-class" href="{{ route('admin.department.removeSubject') }}" data-school="{{$school->getId() }}" data-eportal_class="{{ $class->getId() }}" data-department="{{ $department->getId() }}" data-subject="{{ $subject->getId() }}">Remove</button>
                                         </td>
                                     </tr>
                             @endforeach
@@ -58,8 +56,8 @@
                     </div>
                         @else
                         <div class="well">
-                            <p>No registered departments for <strong>{{$class->getName()}}</strong></p>
-                            <a class="btn btn-primary" href=" {{ route('admin.class.addDepartment', ['school' => $school->getId(), 'class' => $class->getId()]) }} ">Click here to add departments</a>
+                            <p>No registered subjects for <strong>{{$department->getName()}}</strong></p>
+                            <a class="btn btn-primary" href=" {{ route('admin.department.addSubject', ['school' => $school->getId(), 'class' => $class->getId(), 'department' => $department->getId()]) }} ">Click here to add subjects</a>
                         </div>
                     @endif
                 </div>
@@ -71,12 +69,12 @@
 <script>
     $('document').ready(function(){
         $('.remove-class').on('click', function(){
-            var del = confirm('Are you sure you want to remove this department?');
+            var del = confirm('Are you sure you want to remove?');
             if(!del){
                 return;
             }
             var element = $(this);
-            var url = "{{ route('admin.class.removeDepartment') }}";
+            var url = "{{ route('admin.department.removeSubject') }}";
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
@@ -87,17 +85,18 @@
                 data : {
                     school: element.data('school'),
                     class: element.data('eportal_class'),
-                    departments: [element.data('department')]
+                    department: element.data('department'),
+                    subjects: [element.data('subject')]
                 },
                 success: function(data){
                     if(data.success) {
                         window.location.href = data.redirect;
                     }else {
-                        alert('Department could not be removed. Try again');
+                        alert('Unable to remove. Try again');
                     }
                 },
                 failure: function () {
-                    alert('An error occured while removing department. Try Again');
+                    alert('An error occured while removing. Try Again');
                 }
             })
         });

@@ -88,7 +88,7 @@
     <script>
         $('document').ready(function () {
             $('.remove-class').on('click', function () {
-                var del = confirm('Are you sure you want to delete this class?');
+                var del = confirm('Are you sure you want to remove?');
                 if (!del) {
                     return;
                 }
@@ -106,10 +106,14 @@
                         classes: [element.data('eportal_class')]
                     },
                     success: function (data) {
-                        window.location.href = data.redirect;
+                        if(data.success) {
+                            window.location.href = data.redirect;
+                        }else{
+                            alert('Unable to remove. Try again')
+                        }
                     },
                     failure: function () {
-                        alert('An error occured while removing class. Try Again');
+                        alert('An error occured while removing. Try Again');
                     }
                 })
             });

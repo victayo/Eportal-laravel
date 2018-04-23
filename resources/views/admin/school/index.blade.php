@@ -13,6 +13,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
+                @if($schools->count())
                 <div class="table-responsive">
                     <table class="table table-striped jambo_table bulk_action">
                         <thead>
@@ -52,6 +53,12 @@
                         </tbody>
                     </table>
                 </div>
+                    @else
+                    <div class="well">
+                        <p>No schools registered</p>
+                        <a href="{{ route('admin.school.create') }}" class="btn btn-primary">Register a school</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -70,7 +77,8 @@
                 var school = element.data('school');
                 $.ajax(url, {
                     headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        accept: 'application/json'
                     },
                     method: 'POST',
                     data: {

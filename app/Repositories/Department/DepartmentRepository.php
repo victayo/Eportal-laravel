@@ -121,11 +121,17 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      * @param School $school
      * @param EportalClass $class
      * @param Department $department
-     * @return Collection|null
+     * @return Collection
      */
     public function getSubjects(School $school, EportalClass $class, Department $department)
     {
-        return DepartmentSubject::subjects($school, $class, $department)->get();
+        $deptSubjects = DepartmentSubject::subjects($school, $class, $department)->get();
+        $subjects = $deptSubjects->map(function($sub){
+            $subject = new Subject();
+            $subject->forceFill($sub->toArray());
+            return $subject;
+        });
+        return $subjects;
     }
 
     /**
@@ -179,6 +185,11 @@ class DepartmentRepository implements DepartmentRepositoryInterface
             }
         }
         return $removed;
+    }
+
+    public function getUnaddedSubjects(School $school, EportalClass $class, Department $department){
+        $deptSubjects = DepartmentSubject::subjects($school, $class, $department)->pluck('id')->toArray();
+        return Subject::whereNotIn('id', $deptSubjects)->get();
     }
 
     /**

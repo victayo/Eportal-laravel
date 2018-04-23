@@ -30,7 +30,13 @@ interface DepartmentRepositoryInterface {
 
     public function addSubject(School $school, EportalClass $class, Department $department, Subject $subject);
 
+    public function addSubjects(School $school, EportalClass $class, Department $department, array $subjects);
+
     public function removeSubject(School $school, EportalClass $class, Department $department, Subject $subject);
+
+    public function removeSubjects(School $school, EportalClass $class, Department $department, array $subjects);
+
+    public function getUnaddedSubjects(School $school, EportalClass $class, Department $department);
 
     public function hasSubject(School $school, EportalClass $class, Department $department, Subject $subject);
 

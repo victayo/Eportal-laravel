@@ -54,11 +54,15 @@ class SchoolController extends Controller
         ]);
         $school = $this->schoolService->findById($request->input('school'));
         $success = $this->schoolService->delete($school);
-        return [
-            'success' => $success,
-            'redirect' => route('admin.school.index')
-        ];
+        if($request->wantsJson()){
+            return response()->json([
+                'success' => $success,
+                'redirect' => route('admin.school.index')
+            ]);
+        }
+        return redirect()->route('admin.school.index');
     }
+
     public function getClasses(Request $request){
         $this->validate($request, [
             'school' => 'required|exists:schools,id'
@@ -93,9 +97,12 @@ class SchoolController extends Controller
         $school = $this->schoolService->findById($request->input('school'));
         $classes = $request->input('classes');
         $this->schoolService->removeClasses($school, $classes);
-        $content = [
-            'redirect' => route('admin.school.classes', ['school' => $school->getId()]),
-        ];
-        return $content;
+        if($request->wantsJson()){
+            return response()->json([
+                'success'=>true,
+                'redirect' => route('admin.school.classes', ['school' => $school->getId()])
+            ]);
+        }
+        return redirect()->route('admin.school.classes', ['school' => $school->getId()]);
     }
 }
