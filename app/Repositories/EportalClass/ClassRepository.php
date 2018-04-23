@@ -28,14 +28,28 @@ class ClassRepository implements ClassRepositoryInterface {
      */
     protected $schoolRepository;
 
+    /**
+     * @param $id
+     * @return EportalClass|null
+     */
     public function findById($id) {
         return EportalClass::find($id);
     }
-    
+
+    /**
+     * @param $name
+     * @return EportalClass|null
+     */
     public function findByName($name) {
         return EportalClass::where('name', strtolower(trim($name)))->first();
     }
-    
+
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @param Department $department
+     * @return bool
+     */
     public function addDepartment(School $school, EportalClass $class, Department $department) {
         if ($this->hasDepartment($school, $class, $department)) {
             return false;
@@ -44,7 +58,13 @@ class ClassRepository implements ClassRepositoryInterface {
         ClassDepartment::create(['school_class_id' => $id, 'department_id' => $department->getId()]);
         return true;
     }
-    
+
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @param array $departments
+     * @return int
+     */
     public function addDepartments(School $school, EportalClass $class, array $departments){
         $added = 0;
         foreach($departments as $department){
@@ -60,22 +80,61 @@ class ClassRepository implements ClassRepositoryInterface {
         return $added;
     }
 
+    /**
+     * @param array $attributes
+     * @return EportalClass
+     */
     public function create(array $attributes) {
         return EportalClass::create($attributes);
     }
 
+    /**
+     * @param EportalClass $class
+     * @return bool|null
+     * @throws \Exception
+     */
     public function delete(EportalClass $class) {
         return $class->delete();
     }
 
+    /**
+     * @return Collection
+     */
     public function getClasses() {
         return EportalClass::all();
     }
 
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @return Collection
+     */
     public function getDepartments(School $school, EportalClass $class) {
-        return ClassDepartment::departments($school, $class)->get();
+        $classDepts = ClassDepartment::departments($school, $class)->get();
+        $departments = $classDepts->map(function ($department) {
+            $model = new Department();
+            $model->forceFill($department->toArray());
+            return $model;
+        });
+        return $departments;
     }
 
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @return Collection
+     */
+    public function getUnaddedDepartments(School $school, EportalClass $class){
+        $departments = ClassDepartment::departments($school, $class)->pluck('id')->toArray();
+        return Department::WhereNotIn('id', $departments)->get();
+    }
+
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @param Department $department
+     * @return bool
+     */
     public function hasDepartment(School $school, EportalClass $class, Department $department) {
         $sc = $this->getSchoolRepository()->getSchoolClass($school, $class);
         if(!$sc){
@@ -105,6 +164,12 @@ class ClassRepository implements ClassRepositoryInterface {
         return $cd->delete();
     }
 
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @param array $departments
+     * @return int
+     */
     public function removeDepartments(School $school, EportalClass $class, array $departments) {
         $removed = 0;
         foreach($departments as $department){
@@ -120,6 +185,11 @@ class ClassRepository implements ClassRepositoryInterface {
         return $removed;
     }
 
+    /**
+     * @param EportalClass $class
+     * @param array $attributes
+     * @return bool
+     */
     public function update(EportalClass $class, array $attributes) {
         return $class->update($attributes);
     }
@@ -206,7 +276,7 @@ class ClassRepository implements ClassRepositoryInterface {
      * @param EportalClass $class
      * @param Session $session
      * @param Term $term
-     * @return ClassUser
+     * @return ClassUser|null
      */
     public function getClassUser(User $user, School $school, EportalClass $class, Session $session, Term $term)
     {

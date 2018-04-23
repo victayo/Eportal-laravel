@@ -48,13 +48,24 @@ class SchoolController extends Controller
         return redirect()->route('admin.school.index')->with('success', 'School successfully updated');
     }
 
+    public function delete(Request $request){
+        $this->validate($request, [
+            'school' => 'required|exists:schools,id',
+        ]);
+        $school = $this->schoolService->findById($request->input('school'));
+        $success = $this->schoolService->delete($school);
+        return [
+            'success' => $success,
+            'redirect' => route('admin.school.index')
+        ];
+    }
     public function getClasses(Request $request){
         $this->validate($request, [
             'school' => 'required|exists:schools,id'
         ]);
         $school = $this->schoolService->findById($request->query('school'));
         $classes = $this->schoolService->getClasses($school);
-        return view('admin.school.classes', ['classes' => $classes]);
+        return view('admin.school.classes', ['classes' => $classes, 'school' => $school]);
     }
 
     public function addClasses(Request $request){
@@ -64,17 +75,27 @@ class SchoolController extends Controller
         $school = $this->schoolService->findById($request->query('school'));
         if($request->isMethod(Request::METHOD_GET)){
             $classes = $this->schoolService->getUnaddedClasses($school);
-            return view('admin.school.add_classes', ['classes' => $classes]);
+            return view('admin.school.add_classes', ['classes' => $classes, 'school' => $school]);
         }
         $this->validate($request, [
-            'classes.id' => 'required|exists:eportal_classes,id'
+            'classes.*' => 'required|exists:eportal_classes,id'
         ]);
         $classes = $request->input('classes');
         $this->schoolService->addClasses($school, $classes);
-        return redirect()->back();
+        return redirect()->route('admin.school.classes', ['school' => $school->getId()]);
     }
 
     public function removeClasses(Request $request){
-
+        $this->validate($request, [
+            'school' => 'required|exists:schools,id',
+            'classes.*' => 'required|exists:eportal_classes,id'
+        ]);
+        $school = $this->schoolService->findById($request->input('school'));
+        $classes = $request->input('classes');
+        $this->schoolService->removeClasses($school, $classes);
+        $content = [
+            'redirect' => route('admin.school.classes', ['school' => $school->getId()]),
+        ];
+        return $content;
     }
 }
