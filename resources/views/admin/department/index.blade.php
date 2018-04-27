@@ -29,7 +29,7 @@
                                 <td class="property-column-data text-right">{{ $department->getName() }}</td>
                                 <td class="property-column-data text-right" style="text-align: right">
                                     <a class="btn btn-default" href="{{ route('admin.department.edit', ['class' => $department->getId()]) }}">Edit</a>
-                                    <button class="btn btn-danger delete" href="{{ route('admin.department.delete') }}" data-department="{{$department->getId()}}">Delete</button>
+                                    <button class="btn btn-danger delete" data-department="{{$department->getId()}}">Delete</button>
                                 </td>
                             </tr>
                             @endforeach

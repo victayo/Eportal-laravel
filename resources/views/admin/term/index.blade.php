@@ -30,7 +30,7 @@
                                 <td class="property-column-data text-right">{{ $term->getName() }}</td>
                                 <td class="property-column-data text-right">
                                     <a class="btn btn-primary" href="{{ route('admin.term.edit', ['class' => $term->getId()]) }}">Edit</a>
-                                    <button class="btn btn-danger delete" href="{{ route('admin.term.delete') }}" data-term="{{$term->getId()}}">Delete</button>
+                                    <button class="btn btn-danger delete" data-term="{{$term->getId()}}">Delete</button>
                                 </td>
                             </tr>
                             @endforeach

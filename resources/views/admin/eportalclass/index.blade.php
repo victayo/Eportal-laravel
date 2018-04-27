@@ -32,7 +32,7 @@
                                         <td style="text-align: right">{{ $class->getName() }}</td>
                                         <td style="text-align: right">
                                             <a class="btn btn-primary" href="{{ route('admin.class.edit', ['class' => $class->getId()]) }}">Edit</a>
-                                            <button class="btn btn-danger delete" href="{{ route('admin.class.delete') }}" data-class="{{$class->getId()}}">Delete</button>
+                                            <button class="btn btn-danger delete" data-class="{{$class->getId()}}">Delete</button>
                                         </td>
                                     </tr>
                                     @endforeach
