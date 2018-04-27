@@ -6,6 +6,7 @@
         'Eportal.Class',
         'Eportal.Department',
         'Eportal.Subject',
-        'Eportal.Property'
+        'Eportal.Property',
+        'Eportal.User'
     ]);
 })();

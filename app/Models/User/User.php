@@ -10,6 +10,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
+    const USER_STUDENT = 'student';
+    const USER_TEACHER = 'teacher';
+
     use Notifiable;
     /**
      * The attributes that are mass assignable.

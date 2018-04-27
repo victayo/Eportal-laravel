@@ -62,6 +62,11 @@ mix.scripts([
     eportal_path + 'property/js/controllers.js',
     eportal_path + 'property/property.js',
 
+    //user
+    eportal_path + 'user/js/services.js',
+    eportal_path + 'user/js/controllers.js',
+    eportal_path + 'user/user.js',
+    
     //main
     eportal_path + 'eportal.js',
 ], 'public/js/eportal.js');

@@ -22,6 +22,11 @@ Route::get('/form', 'FormController@index'); //delete
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function(){
    Route::get('/', 'AdminController@index') ;
 
+    //========================== USERS ===========================================
+    Route::group(['prefix' => 'user'], function(){
+        Route::match(['get', 'post'], 'register', 'UserController@register')->name('admin.user.register');
+    });
+
     //========================== SESSIONS ===========================================
     Route::group(['prefix' => 'session'], function(){
         Route::get('/', 'SessionController@index')->name('admin.session.index');

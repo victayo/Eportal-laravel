@@ -13,6 +13,7 @@
     <link href="{{asset('vendor/bootstrap/dist/css/bootstrap.css')}}" rel="stylesheet">
     <link href="{{ asset('vendor/font-awesome/css/font-awesome.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     @stack('links')
 </head>
 

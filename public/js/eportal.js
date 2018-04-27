@@ -530,16 +530,14 @@
                         $scope.schools = data.schools;
                     }
                 });
-            $scope.$watch('property.session', function (newSession, oldSession) {
-                if(newSession === null){
-                    console.log('empty');
+
+            $scope.$watch('property.session', function (session) {
+                if (!session) {
                     $scope.property.term = null;
                     $scope.terms = [];
-                }
-                if (newSession == oldSession) {
                     return;
                 }
-                propertyService.getTerms(newSession)
+                propertyService.getTerms(session)
                     .then(function (data) {
                         if (data.success) {
                             $scope.terms = data.terms;
@@ -547,11 +545,17 @@
                     });
             });
 
-            $scope.$watch('property.school', function (newSchool, oldSchool) {
-                if (!newSchool || newSchool == oldSchool) {
+            $scope.$watch('property.school', function (school) {
+                if (!school) {
+                    $scope.property.class = null;
+                    $scope.property.department = null;
+                    $scope.property.subject = null;
+                    $scope.classes = [];
+                    $scope.departments = [];
+                    $scope.subjects = [];
                     return;
                 }
-                propertyService.getClasses(newSchool)
+                propertyService.getClasses(school)
                     .then(function (data) {
                         if (data.success) {
                             $scope.classes = data.classes;
@@ -564,11 +568,15 @@
                     });
             });
 
-            $scope.$watch('property.class', function (newClass, oldClass) {
-                if (!newClass || newClass == oldClass) {
+            $scope.$watch('property.class', function ($class) {
+                if (!$class) {
+                    $scope.property.subject = null;
+                    $scope.property.department = null;
+                    $scope.departments = [];
+                    $scope.subjects = [];
                     return;
                 }
-                propertyService.getDepartments($scope.property.school, newClass)
+                propertyService.getDepartments($scope.property.school, $class)
                     .then(function (data) {
                         if (data.success) {
                             $scope.departments = data.departments;
@@ -578,11 +586,13 @@
                     });
             });
 
-            $scope.$watch('property.department', function (newDept, oldDept) {
-                if (!newDept || newDept == oldDept || !$('#subject').length) {
+            $scope.$watch('property.department', function (department) {
+                if (!department || !$('#subject').length) {
+                    $scope.property.subject = null;
+                    $scope.subjects = [];
                     return;
                 }
-                propertyService.getSubjects($scope.property.school, $scope.property.class, newDept)
+                propertyService.getSubjects($scope.property.school, $scope.property.class, department)
                     .then(function (data) {
                         if (data.success) {
                             $scope.subjects = data.subjects;
@@ -601,6 +611,44 @@
         'Eportal.Property.Controllers'
     ]);
 })();
+(function () {
+    angular.module('Eportal.User.Services', [])
+        .factory('userService', ['$http', 'userURL', function ($http, userURL) {
+            var details = {};
+            return {
+                getDetails: function () {
+                    return details;
+                },
+                register: function (details, property) {
+                    $http.post(userURL.register, {})
+                        .then(function (response) {
+                            return response.data;
+                        });
+                }
+            }
+        }])
+        .value('userURL', {
+            register: '/api/user/register'
+        })
+})();
+(function () {
+    angular.module('Eportal.User.Controllers', [])
+        .controller('UserController', ['$scope', 'userService', function ($scope, userService) {
+            $scope.details = userService.getDetails();
+        }])
+        .controller('RegisterController', ['$scope', 'userService', 'propertyService', function ($scope, userService, propertyService) {
+            $scope.submit = function(){
+                console.log(propertyService.getProperty());
+                console.log(userService.getDetails());
+            }
+        }])
+})();
+(function () {
+    angular.module('Eportal.User', [
+        'Eportal.User.Services',
+        'Eportal.User.Controllers'
+    ])
+})();
 (function(){
     angular.module('Eportal', [
         'Eportal.Session',
@@ -609,6 +657,7 @@
         'Eportal.Class',
         'Eportal.Department',
         'Eportal.Subject',
-        'Eportal.Property'
+        'Eportal.Property',
+        'Eportal.User'
     ]);
 })();
