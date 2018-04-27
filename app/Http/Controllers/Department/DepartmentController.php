@@ -68,13 +68,15 @@ class DepartmentController extends Controller
         return response()->json(['success' => $success]);
     }
 
-    public function getSubjects(Request $request, Department $department){
+    public function getSubjects(Request $request){
         $this->validate($request, [
             'school' => 'required|exists:schools,id',
-            'class' => 'required|exists:eportal_classes,id'
+            'class' => 'required|exists:eportal_classes,id',
+            'department' => 'required|exists:departments,id'
         ]);
         $school = $this->getSchoolRepository()->findById($request->query('school'));
         $class = $this->getClassRepository()->findById($request->query('class'));
+        $department = $this->departmentRepo->findById($request->query('department'));
         $subjects = $this->departmentRepo->getSubjects($school, $class, $department);
         $success = true;
         if(null === $subjects){

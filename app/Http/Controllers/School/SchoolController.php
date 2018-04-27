@@ -7,6 +7,7 @@ use Eportal\Models\School;
 use Eportal\Repositories\EportalClass\ClassRepository;
 use Eportal\Repositories\School\SchoolRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SchoolController extends Controller
 {
@@ -28,11 +29,11 @@ class SchoolController extends Controller
     
     public function index(){
         $schools = $this->schoolRepo->getSchools();
-        return response()->json(['schools' => $schools]);
+        return response()->json(['success' => true, 'schools' => $schools]);
     }
     
     public function show(School $school){
-        return response()->json(['school' => $school]);
+        return response()->json(['success' => true, 'school' => $school]);
     }
     
     public function store(Request $request){
@@ -54,14 +55,18 @@ class SchoolController extends Controller
         return response()->json(['success' => $success], 204);
     }
     
-    public function getClasses(School $school){
+    public function getClasses(Request $request){
+        $this->validate($request, [
+            'school' => 'required|exists:schools,id'
+        ]);
+        $school = $this->schoolRepo->findById($request->query('school'));
         $classes = $this->schoolRepo->getClasses($school);
-        return response()->json(['classes' => $classes]);
+        return response()->json(['success' => true, 'classes' => $classes]);
     }
 
     public function getUnaddedClasses(School $school){
         $classes = $this->schoolRepo->getUnaddedClasses($school);
-        return response()->json(['classes' => $classes]);
+        return response()->json(['success' => true, 'classes' => $classes]);
     }
     
     public function addClass(Request $request){

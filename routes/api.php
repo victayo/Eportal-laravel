@@ -15,12 +15,12 @@ Route::group(['namespace' => 'User', 'prefix' => 'user'], function (){
 
 Route::group(['namespace' => 'School', 'prefix' => 'school'], function(){
     Route::get('/', 'SchoolController@index');
-    Route::get('/{school}', 'SchoolController@show');
+    Route::get('/{school}', 'SchoolController@show')->where('school', '[0-9]+');
     Route::post('/', 'SchoolController@store');
     Route::post('/{school}', 'SchoolController@update');
     Route::delete('/{school}', 'SchoolController@delete');
     
-    Route::get('/class/{school}', 'SchoolController@getClasses');
+    Route::get('/class', 'SchoolController@getClasses');
     Route::post('/class/add', 'SchoolController@addClass');
     Route::post('/class/remove', 'SchoolController@removeClass');
 });
@@ -29,12 +29,12 @@ Route::group(['namespace' => 'School', 'prefix' => 'school'], function(){
 
 Route::group(['namespace' => 'EportalClass', 'prefix' => 'class'], function(){
     Route::get('/', 'ClassController@index');
-    Route::get('/{class}', 'ClassController@show');
+    Route::get('/{class}', 'ClassController@show')->where('class', '[0-9]+');
     Route::post('/', 'ClassController@store');
     Route::post('/{class}', 'ClassController@update');
     Route::delete('/{class}', 'ClassController@delete');
 
-    Route::get('/department/{class}', 'ClassController@getDepartments');
+    Route::get('/department', 'ClassController@getDepartments');
     Route::post('/department/add', 'ClassController@addDepartment');
     Route::post('department/remove', 'ClassController@removeDepartment');
 });
@@ -43,12 +43,12 @@ Route::group(['namespace' => 'EportalClass', 'prefix' => 'class'], function(){
 
 Route::group(['namespace' => 'Department', 'prefix' => 'department'], function(){
     Route::get('/', 'DepartmentController@index');
-    Route::get('/{department}', 'DepartmentController@show');
+    Route::get('/{department}', 'DepartmentController@show')->where('department', '[0-9]+');
     Route::post('/', 'DepartmentController@store');
     Route::post('/{department}', 'DepartmentController@update');
     Route::delete('/{department}', 'DepartmentController@delete');
 
-    Route::get('/subject/{department}', 'DepartmentController@getSubjects');
+    Route::get('/subject', 'DepartmentController@getSubjects');
     Route::post('/subject/add', 'DepartmentController@addSubject');
     Route::post('subject/remove', 'DepartmentController@removeSubject');
 });
@@ -67,12 +67,12 @@ Route::group(['namespace' => 'Subject', 'prefix' => 'subject'], function(){
 
 Route::group(['namespace' => 'Session', 'prefix' => 'session'], function(){
     Route::get('/', 'SessionController@index');
-    Route::get('/{session}', 'SessionController@show');
+    Route::get('/{session}', 'SessionController@show')->where('session', '[0-9]+');
     Route::post('/', 'SessionController@store');
-    Route::post('/{session}', 'SessionController@update');
-    Route::delete('/{session}', 'SessionController@delete');
+    Route::post('/{session}', 'SessionController@update')->where('session', '[0-9]+');
+    Route::delete('/{session}', 'SessionController@delete')->where('session', '[0-9]+');
 
-    Route::get('/term/{session}', 'SessionController@getTerms');
+    Route::get('/term', 'SessionController@getTerms');
     Route::post('/term/add', 'SessionController@addTerm');
     Route::post('/term/remove', 'SessionController@removeTerm');
 });

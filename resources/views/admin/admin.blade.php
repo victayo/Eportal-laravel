@@ -16,7 +16,7 @@
     @stack('links')
 </head>
 
-<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+<body class="fixed-nav sticky-footer bg-dark" id="page-top" ng-app="Eportal">
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
     <a class="navbar-brand" href="index.html">Eportal</a>
@@ -206,12 +206,13 @@
             </div>
         </div>
     </div>
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('vendor/jquery/dist/jquery.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.js') }}"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('vendor/jquery-easing/jquery.easing.js') }}"></script>
-    <!-- Custom scripts for all pages-->
+
+    {{--<script src="{{ asset('vendor/jquery/dist/jquery.js') }}"></script>--}}
+    {{--<script src="{{ asset('vendor/jquery-easing/jquery.easing.js') }}"></script>--}}
+    {{--<script src="{{ asset('vendor/angular/angular.js') }}"></script>--}}
+    {{--<script src="{{ asset('vendor/bootstrap/dist/js/bootstrap.bundle.js') }}"></script>--}}
+    <script src="{{ asset('js/vendor.js') }}"></script>
+    <script src="{{ asset('js/eportal.js') }}"></script>
     <script src="{{ asset('js/sb-admin.js') }}"></script>
     @stack('scripts')
 </div>

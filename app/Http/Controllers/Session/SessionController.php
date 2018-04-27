@@ -53,9 +53,13 @@ class SessionController extends Controller
         return response()->json(['success' => $success]);
     }
 
-    public function getTerms(Session $session){
+    public function getTerms(Request $request){
+        $this->validate($request, [
+            'session' => 'required|exists:sessions,id'
+        ]);
+        $session = $this->sessionRepo->findById($request->query('session'));
         $terms = $this->sessionRepo->getTerms($session);
-        return response()->json(['terms' => $terms]);
+        return response()->json(['success' => true,'terms' => $terms]);
     }
 
     public function addTerm(Request $request){

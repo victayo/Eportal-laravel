@@ -89,7 +89,7 @@ class SessionRepository implements SessionRepositoryInterface{
      * @return Collection
      */
     public function getSessions() {
-        return Session::all()->sortBy('name');
+        return Session::all();
     }
 
     /**
