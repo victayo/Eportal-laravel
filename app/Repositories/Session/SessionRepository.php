@@ -102,6 +102,15 @@ class SessionRepository implements SessionRepositoryInterface{
 
     /**
      * @param Session $session
+     * @return Collection
+     */
+    public function getUnaddedTerms(Session $session){
+        $terms = SessionTerm::terms()->pluck('id')->toArray();
+        return Term::whereNotIn('id', $terms);
+    }
+
+    /**
+     * @param Session $session
      * @param Term $term
      * @return bool
      */
