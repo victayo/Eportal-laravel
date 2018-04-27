@@ -1,13 +1,13 @@
 @extends('admin.admin')
-@section('title', 'School')
-@section('page-title', 'Schools')
+@section('title', 'Session')
+@section('page-title', 'Sessions')
 @section('content')
 <div class="card mb-3">
     <div class="card-header">
-            <i class="fa fa-list"></i> School Lists
-        <a href="{{ route('admin.school.create') }}" class="btn btn-primary" style="float: right">Create New School</a>
+            <i class="fa fa-list"></i> Session Lists
+        <a href="{{ route('admin.session.create') }}" class="btn btn-primary" style="float: right">Create New Session</a>
     </div>
-        @if($schools->count())
+        @if($sessions->count())
             <div class="table-responsive">
                 <div class="row">
                     <div class="col-md-12">
@@ -21,7 +21,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($schools as $school)
+                            @foreach($sessions as $session)
                                 @if($loop->index % 2)
                                     <tr class="even">
                                 @else
@@ -29,10 +29,10 @@
                                         @endif
                                         <td style="text-align:left"><input type="checkbox"></td>
                                         <td style="text-align: right">{{$loop->index + 1}}</td>
-                                        <td style="text-align: right"><a href="{{ route('admin.school.classes', ['school' => $school->getId()]) }}">{{ $school->getName() }}</a></td>
+                                        <td style="text-align: right"><a href="{{ route('admin.session.terms', ['session' => $session->getId()]) }}">{{ $session->getName() }}</a></td>
                                         <td style="text-align: right">
-                                            <a class="btn btn-primary" href="{{ route('admin.school.edit', ['school' => $school->getId()]) }}">Edit</a>
-                                            <button class="btn btn-danger delete" href="{{ route('admin.school.delete') }}" data-school="{{$school->getId()}}">Delete</button>
+                                            <a class="btn btn-primary" href="{{ route('admin.session.edit', ['session' => $session->getId()]) }}">Edit</a>
+                                            <button class="btn btn-danger delete" data-session="{{$session->getId()}}">Delete</button>
                                         </td>
                                     </tr>
                             @endforeach
@@ -43,8 +43,8 @@
             </div>
         @else
             <div class="card-body text-center">
-                <p class="card-text">No schools registered</p>
-                <a href="{{ route('admin.school.create') }}" class="btn btn-primary">Register a school</a>
+                <p class="card-text">No sessions registered</p>
+                <a href="{{ route('admin.session.create') }}" class="btn btn-primary">Register a session</a>
             </div>
         @endif
 </div>
@@ -54,13 +54,13 @@
     <script>
         $('document').ready(function () {
             $('.delete').on('click', function () {
-                var $del = confirm('Are you sure you want to delete this school');
+                var $del = confirm('Are you sure you want to delete');
                 if(!$del){
                     return;
                 }
                 var element = $(this);
-                var url = "{{ route('admin.school.delete') }}";
-                var school = element.data('school');
+                var url = "{{ route('admin.session.delete') }}";
+                var session = element.data('session');
                 $.ajax(url, {
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
@@ -68,13 +68,13 @@
                     },
                     method: 'POST',
                     data: {
-                        school: school
+                        session: session
                     },
                     success: function(data){
                         if(data.success){
                             window.location.href = data.redirect;
                         }else{
-                            alert('Unable to delete this school. Try Again');
+                            alert('Unable to delete. Try Again');
                         }
                     },
                     failure: function () {

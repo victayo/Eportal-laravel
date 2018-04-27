@@ -2,6 +2,7 @@
 
 namespace Eportal\Http\Controllers\Admin;
 
+use Eportal\Models\Session;
 use Eportal\Repositories\Session\SessionRepositoryInterface;
 use Illuminate\Http\Request;
 use Eportal\Http\Controllers\Controller;
@@ -27,7 +28,7 @@ class SessionController extends Controller
         return view('admin.session.index', ['sessions' => $sessions]);
     }
 
-    public function create(Request $request){
+    public function store(Request $request){
         if($request->isMethod('GET')) {
             return view('admin.session.create');
         }

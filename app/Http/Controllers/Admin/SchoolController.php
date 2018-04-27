@@ -28,7 +28,7 @@ class SchoolController extends Controller
         return view('admin.school.index', ['schools' => $schools]);
     }
 
-    public function create(Request $request){
+    public function store(Request $request){
         if($request->isMethod('GET')) {
             return view('admin.school.create');
         }

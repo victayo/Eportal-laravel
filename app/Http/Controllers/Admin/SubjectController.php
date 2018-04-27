@@ -24,23 +24,12 @@ class SubjectController extends Controller
         $this->subjectService = $subjectService;
     }
 
-    /**
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $subjects = $this->subjectService->getSubjects();
         return view('admin.subject.index', ['subjects' => $subjects]);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -53,23 +42,6 @@ class SubjectController extends Controller
         return view('admin.subject.create');
     }
 
-    /**
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-
-    /**
-     *
-     * @param  Request $request
-     * @param Subject $subject
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Subject $subject)
     {
         if ($request->isMethod(Request::METHOD_POST)) {
@@ -82,11 +54,6 @@ class SubjectController extends Controller
         return view('admin.subject.edit', ['subject' => $subject]);
     }
 
-    /**
-     *
-     * @param Request $request
-     * @return Response
-     */
     public function delete(Request $request)
     {
         $this->validate($request, [

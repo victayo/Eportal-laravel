@@ -25,11 +25,11 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function(){
     //========================== SESSIONS ===========================================
     Route::group(['prefix' => 'session'], function(){
         Route::get('/', 'SessionController@index')->name('admin.session.index');
-        Route::match(['get', 'post'], 'create', 'SessionController@create')->name('admin.session.create');
+        Route::match(['get', 'post'], 'create', 'SessionController@store')->name('admin.session.create');
         Route::match(['get', 'post'], 'edit/{session}', 'SessionController@update')->name('admin.session.edit');
         Route::post('delete', 'SessionController@delete')->name('admin.session.delete');
 
-        Route::get('/class', 'SessionController@getTerms')->name('admin.session.classes');
+        Route::get('/term', 'SessionController@getTerms')->name('admin.session.terms');
         Route::match(['get', 'post'], 'class/add', 'SessionController@addTerms')->name('admin.session.addTerm');
         Route::post('class/remove', 'SessionController@removeTerms')->name('admin.session.removeTerm');
     });
@@ -45,7 +45,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function(){
    //========================== SCHOOLS ===========================================
     Route::group(['prefix' => 'school'], function(){
         Route::get('/', 'SchoolController@index')->name('admin.school.index');
-        Route::match(['get', 'post'], 'create', 'SchoolController@create')->name('admin.school.create');
+        Route::match(['get', 'post'], 'create', 'SchoolController@store')->name('admin.school.create');
         Route::match(['get', 'post'], 'edit/{school}', 'SchoolController@update')->name('admin.school.edit');
         Route::post('delete', 'SchoolController@delete')->name('admin.school.delete');
 
