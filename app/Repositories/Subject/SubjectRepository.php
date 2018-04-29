@@ -64,7 +64,7 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @return Collection
      */
     public function getSubjects() {
-        return Subject::all();
+        return Subject::get();
     }
 
     /**

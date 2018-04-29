@@ -101,7 +101,7 @@ class ClassRepository implements ClassRepositoryInterface {
      * @return Collection
      */
     public function getClasses() {
-        return EportalClass::all();
+        return EportalClass::get();
     }
 
     /**

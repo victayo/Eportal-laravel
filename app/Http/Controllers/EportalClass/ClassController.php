@@ -61,17 +61,18 @@ class ClassController extends Controller
 
     /**
      * @param Request $request
-     * @param EportalClass $class
      * @return \Illuminate\Http\JsonResponse
      *
      * /class/department/{classId}?school={schoolId}
      */
-    public function getDepartments(Request $request, EportalClass $class)
+    public function getDepartments(Request $request)
     {
         $this->validate($request, [
-            'school' => 'required|exists:schools,id'
+            'school' => 'required|exists:schools,id',
+            'class' => 'required|exists:eportal_classes,id'
         ]);
         $school = $this->classRepository->getSchoolRepository()->findById($request->query('school'));
+        $class = $this->classRepository->findById($request->query('class'));
         $departments = $this->classRepository->getDepartments($school, $class);
         return response()->json(['success' => true, 'departments' => $departments]);
     }

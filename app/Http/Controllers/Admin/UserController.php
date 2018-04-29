@@ -20,7 +20,8 @@ class UserController extends Controller
 
     public function registerStudent(Request $request){
         if($request->isMethod(Request::METHOD_GET)){
-            return view('admin.users.register_student', ['type' => User::USER_STUDENT]);
+            $fields = ['school', 'class', 'department']; //fields to display
+            return view('admin.users.register_student', ['type' => User::USER_STUDENT, 'fields' => $fields]);
         }
         dd($request->all());
     }

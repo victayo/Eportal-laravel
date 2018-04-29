@@ -12,6 +12,8 @@ class User extends Authenticatable
 {
     const USER_STUDENT = 'student';
     const USER_TEACHER = 'teacher';
+    const USER_MALE = 'm';
+    const USER_FEMALE = 'f';
 
     use Notifiable;
     /**

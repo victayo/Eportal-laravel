@@ -114,7 +114,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      */
     public function getDepartments()
     {
-        return Department::all();
+        return Department::get();
     }
 
     /**

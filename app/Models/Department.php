@@ -4,6 +4,8 @@ namespace Eportal\Models;
 
 class Department extends AbstractProperty
 {
+    const DEPARTMENT_DEFAULT = 'default';
+
     public static function users(School $school, EportalClass $class, Department $department, Session $session, Term $term)
     {
         return EportalClass::users($school, $class, $session, $term)

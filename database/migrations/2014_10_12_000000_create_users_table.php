@@ -19,9 +19,11 @@ class CreateUsersTable extends Migration
             $table->string('last_name');
             $table->string('middle_name')->nullable();
             $table->string('username')->unique(); //registration number
+            $table->char('gender', 2);
+            $table->date('dob');
 //            $table->string('email')->unique();
             $table->string('password');
-            $table->tinyInteger('gender')->comment("'0' = male, '1' = female");
+
             $table->rememberToken();
             $table->timestamps();
         });

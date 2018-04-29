@@ -514,8 +514,8 @@
             $scope.classes = [];
             $scope.subject = [];
 
-            $scope.hasDepartment = false;
-            $scope.hasSubject = false;
+            $scope.hasDepartment = $('#department').length > 0;
+            $scope.hasSubject = $('#subject').length > 0;
 
             propertyService.getSessions()
                 .then(function (data) {
@@ -587,9 +587,12 @@
             });
 
             $scope.$watch('property.department', function (department) {
-                if (!department || !$('#subject').length) {
+                if (!department || !$scope.hasDepartment) {
                     $scope.property.subject = null;
                     $scope.subjects = [];
+                    return;
+                }
+                if(!$scope.hasSubject){
                     return;
                 }
                 propertyService.getSubjects($scope.property.school, $scope.property.class, department)
@@ -599,10 +602,6 @@
                         }
                     });
             });
-
-            $scope.submit = function () {
-                console.log($scope.property);
-            }
         }]);
 })();
 (function () {
@@ -619,8 +618,11 @@
                 getDetails: function () {
                     return details;
                 },
-                register: function (details, property) {
-                    $http.post(userURL.register, {})
+                setDetails: function($details){
+                    details = $details;
+                },
+                register: function (data) {
+                    return $http.post(userURL.register, data)
                         .then(function (response) {
                             return response.data;
                         });
@@ -630,16 +632,51 @@
         .value('userURL', {
             register: '/api/user/register'
         })
+        .value('userWeb', {
+            register: ''
+        })
 })();
 (function () {
     angular.module('Eportal.User.Controllers', [])
         .controller('UserController', ['$scope', 'userService', function ($scope, userService) {
             $scope.details = userService.getDetails();
         }])
-        .controller('RegisterController', ['$scope', 'userService', 'propertyService', function ($scope, userService, propertyService) {
-            $scope.submit = function(){
-                console.log(propertyService.getProperty());
-                console.log(userService.getDetails());
+        .controller('RegisterController', ['$scope', '$window', 'userService', 'propertyService', function ($scope, $window, userService, propertyService) {
+            $scope.btn_disabled = false;
+            $scope.submit = function () {
+                $scope.btn_disabled = true;
+                var property = propertyService.getProperty();
+                var details = userService.getDetails();
+                details.password = details.username;
+                var data = Object.assign({}, details, property);
+                var dob = data.dob;
+                var day = str_pad(dob.getDate());
+                var mth = str_pad(dob.getMonth() + 1);
+                var yr = dob.getFullYear();
+                data.dob = yr + '-' + mth + '-' + day;
+                userService.register(data)
+                    .then(function (response) {
+                        $scope.btn_disabled = false;
+                        if(response.success){
+                            $window.location.reload();
+                            alert('Student Successfully Registered!');
+                            return;
+                        }
+                        alert('Registration Failed! Check inputs and try again')
+                    }, function(){
+                        $scope.btn_disabled = false;
+                        alert('An error occured. Try again');
+                    });
+            }
+
+            /**
+             *
+             * @param n
+             * @returns {string}
+             * adds leading zero to day and month number less than 10.
+             */
+            function str_pad(n) {
+                return String("0" + n).slice(-2);
             }
         }])
 })();
@@ -650,7 +687,7 @@
     ])
 })();
 (function(){
-    angular.module('Eportal', [
+    var eportal = angular.module('Eportal', [
         'Eportal.Session',
         'Eportal.Term',
         'Eportal.School',
@@ -660,4 +697,18 @@
         'Eportal.Property',
         'Eportal.User'
     ]);
+    eportal.factory('httpRequestInterceptor', [function () {
+        return {
+            request: function(config){
+                config.headers['Accept'] = 'application/json';
+                if(config.method === 'POST') {
+                    config.headers['X-CSRF-TOKEN'] = $('meta[name="csrf-token"]').attr('content');
+                }
+                return config;
+            }
+        }
+    }]);
+    eportal.config(function ($httpProvider) {
+        $httpProvider.interceptors.push('httpRequestInterceptor');
+    })
 })();

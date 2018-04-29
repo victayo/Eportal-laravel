@@ -56,7 +56,6 @@ class UserService implements UserServiceInterface
      */
     protected $subjectService;
 
-
     /**
      * @param array $userAttributes
      * @param Session $session
@@ -67,7 +66,7 @@ class UserService implements UserServiceInterface
      * @param Subject $subject
      * @return User|null
      */
-    public function registerStudent(array $userAttributes, Session $session, Term $term, School $school, EportalClass $class, Department $department, Subject $subject)
+    public function registerStudent(array $userAttributes, Session $session, Term $term, School $school, EportalClass $class, Department $department = null, Subject $subject = null)
     {
         DB::beginTransaction();
         $user = $this->createUser($userAttributes);
@@ -93,7 +92,7 @@ class UserService implements UserServiceInterface
      * @param Subject $subject
      * @return bool
      */
-    protected function register(User $user, Session $session, Term $term, School $school, EportalClass $class, Department $department, Subject $subject)
+    protected function register(User $user, Session $session, Term $term, School $school, EportalClass $class, Department $department, Subject $subject = null)
     {
         $success = $this->getSessionService()->addUser($user, $session, $term);
         if (!$success) {
@@ -107,9 +106,29 @@ class UserService implements UserServiceInterface
         if (!$success) {
             return false;
         }
+
+        $departmentService = $this->getDepartmentService();
+        $subjectService = $this->getSubjectService();
+        if(null === $department){ //add user to default department. All classes must have at least one department
+            $department = $departmentService->findByName(Department::DEPARTMENT_DEFAULT);
+            $subjects = $departmentService->getSubjects($school, $class, $department, $session, $term);
+            $departmentService->addUser($user, $school, $class, $department, $session, $term);
+            foreach ($subjects as $subject){
+                $subjectService->addUser($user, $school, $class, $department, $subject, $session, $term);
+            }
+            return true;
+        }
+
         $success = $this->getDepartmentService()->addUser($user, $school, $class, $department, $session, $term);
         if (!$success) {
             return false;
+        }
+        if(null === $subject){
+            $subjects = $this->getDepartmentService()->getSubjects($school, $class, $department);
+            foreach ($subjects as $subject){
+                $subjectService->addUser($user, $school, $class, $department, $subject, $session, $term);
+            }
+            return true;
         }
         $success = $this->getSubjectService()->addUser($user, $school, $class, $department, $subject, $session, $term);
         return $success;

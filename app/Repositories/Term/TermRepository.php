@@ -45,7 +45,7 @@ class TermRepository implements TermRepositoryInterface {
      * @return Collection
      */
     public function getTerms() {
-        return Term::all()->sortBy('name');
+        return Term::get()->sortBy('name');
     }
 
     /**

@@ -89,7 +89,7 @@ class SessionRepository implements SessionRepositoryInterface{
      * @return Collection
      */
     public function getSessions() {
-        return Session::all();
+        return Session::get();
     }
 
     /**
@@ -97,7 +97,13 @@ class SessionRepository implements SessionRepositoryInterface{
      * @return Collection
      */
     public function getTerms(Session $session) {
-        return SessionTerm::terms($session)->get();
+        $sessionTerms = SessionTerm::terms($session)->get();
+        $terms = $sessionTerms->map(function ($term) {
+            $model = new Term();
+            $model->forceFill($term->toArray());
+            return $model;
+        });
+        return $terms;
     }
 
     /**
@@ -105,8 +111,8 @@ class SessionRepository implements SessionRepositoryInterface{
      * @return Collection
      */
     public function getUnaddedTerms(Session $session){
-        $terms = SessionTerm::terms()->pluck('id')->toArray();
-        return Term::whereNotIn('id', $terms);
+        $terms = SessionTerm::terms($session)->pluck('id')->toArray();
+        return Term::whereNotIn('id', $terms)->get();
     }
 
     /**

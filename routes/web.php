@@ -35,7 +35,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin'], function(){
         Route::post('delete', 'SessionController@delete')->name('admin.session.delete');
 
         Route::get('/term', 'SessionController@getTerms')->name('admin.session.terms');
-        Route::match(['get', 'post'], 'class/add', 'SessionController@addTerms')->name('admin.session.addTerm');
+        Route::match(['get', 'post'], 'term/add', 'SessionController@addTerms')->name('admin.session.addTerm');
         Route::post('class/remove', 'SessionController@removeTerms')->name('admin.session.removeTerm');
     });
 

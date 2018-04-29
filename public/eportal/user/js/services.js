@@ -6,8 +6,11 @@
                 getDetails: function () {
                     return details;
                 },
-                register: function (details, property) {
-                    $http.post(userURL.register, {})
+                setDetails: function($details){
+                    details = $details;
+                },
+                register: function (data) {
+                    return $http.post(userURL.register, data)
                         .then(function (response) {
                             return response.data;
                         });
@@ -16,5 +19,8 @@
         }])
         .value('userURL', {
             register: '/api/user/register'
+        })
+        .value('userWeb', {
+            register: ''
         })
 })();

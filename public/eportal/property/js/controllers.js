@@ -9,8 +9,8 @@
             $scope.classes = [];
             $scope.subject = [];
 
-            $scope.hasDepartment = false;
-            $scope.hasSubject = false;
+            $scope.hasDepartment = $('#department').length > 0;
+            $scope.hasSubject = $('#subject').length > 0;
 
             propertyService.getSessions()
                 .then(function (data) {
@@ -82,9 +82,12 @@
             });
 
             $scope.$watch('property.department', function (department) {
-                if (!department || !$('#subject').length) {
+                if (!department || !$scope.hasDepartment) {
                     $scope.property.subject = null;
                     $scope.subjects = [];
+                    return;
+                }
+                if(!$scope.hasSubject){
                     return;
                 }
                 propertyService.getSubjects($scope.property.school, $scope.property.class, department)
@@ -94,9 +97,5 @@
                         }
                     });
             });
-
-            $scope.submit = function () {
-                console.log($scope.property);
-            }
         }]);
 })();
