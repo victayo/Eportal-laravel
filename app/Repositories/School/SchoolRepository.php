@@ -233,7 +233,11 @@ class SchoolRepository implements SchoolRepositoryInterface
      */
     public function getUsers(School $school, Session $session, Term $term)
     {
-        return School::users($school, $session, $term)->get();
+        $users = School::users($school, $session, $term)->get();
+        return $users->map(function ($user){
+            $u = new User();
+            return $u->forceFill($user->toArray());
+        });
     }
 
     /**

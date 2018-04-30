@@ -23,22 +23,22 @@ class ClassRepositoryTest extends EportalProperty {
     }
 
     public function testAddDepartment() {
-        $school = $this->getSchool();
-        $class = $this->getClass();
+        $school = $this->getSchools()->first();
+        $class = $this->getClasses()->first();
         $sc = SchoolClass::create(['school_id' => $school->getId(), 'class_id' => $class->getId()]);
         $this->schoolRepository->expects($this->exactly(2))
                 ->method('getSchoolClass')
                 ->will($this->returnValue($sc));
-        $department = $this->getDepartment();
+        $department = $this->getDepartments()->first();
         $result = $this->classRepository->addDepartment($school, $class, $department);
         $this->assertDatabaseHas('class_department', ['school_class_id' => $sc->id, 'department_id' => $department->getId()]);
         $this->assertTrue($result);
     }
 
     public function testHasDepartmentReturnFalse(){
-        $school = $this->getSchool();
-        $class = $this->getClass();
-        $department = $this->getDepartment();
+        $school = $this->getSchools()->first();
+        $class = $this->getClasses()->first();
+        $department = $this->getDepartments()->first();
         $this->schoolRepository->expects($this->once())
                 ->method('getSchoolClass')
                 ->will($this->returnValue(null));
@@ -47,9 +47,9 @@ class ClassRepositoryTest extends EportalProperty {
     }
     
     public function testHasDepartmentReturnTrue(){
-        $school = $this->getSchool();
-        $class = $this->getClass();
-        $department = $this->getDepartment();
+        $school = $this->getSchools()->first();
+        $class = $this->getClasses()->first();
+        $department = $this->getDepartments()->first();
         $sc = SchoolClass::create(['school_id' => $school->getId(), 'class_id' => $class->getId()]);
         $this->schoolRepository->expects($this->once())
                 ->method('getSchoolClass')
@@ -60,9 +60,9 @@ class ClassRepositoryTest extends EportalProperty {
     }
     
     public function testRemoveDepartment(){
-        $school = $this->getSchool();
-        $class = $this->getClass();
-        $department = $this->getDepartment();
+        $school = $this->getSchools()->first();
+        $class = $this->getClasses()->first();
+        $department = $this->getDepartments()->first();
         $sc = SchoolClass::create(['school_id' => $school->getId(), 'class_id' => $class->getId()]);
         $this->schoolRepository->expects($this->exactly(2))
                 ->method('getSchoolClass')
@@ -72,5 +72,7 @@ class ClassRepositoryTest extends EportalProperty {
         $this->assertTrue($result);
     }
     
-    
+    public function testGetUsers(){
+
+    }
 }
