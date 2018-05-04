@@ -7,7 +7,6 @@ use Eportal\Models\School;
 use Eportal\Repositories\EportalClass\ClassRepository;
 use Eportal\Repositories\School\SchoolRepositoryInterface;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class SchoolController extends Controller
 {
@@ -22,6 +21,8 @@ class SchoolController extends Controller
      * @var ClassRepository
      */
     protected $classRepo;
+
+
     
     public function __construct(SchoolRepositoryInterface $schoolRepo) {
         $this->schoolRepo = $schoolRepo;

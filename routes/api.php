@@ -23,6 +23,10 @@ Route::group(['namespace' => 'School', 'prefix' => 'school'], function(){
     Route::get('/class', 'SchoolController@getClasses');
     Route::post('/class/add', 'SchoolController@addClass');
     Route::post('/class/remove', 'SchoolController@removeClass');
+
+    Route::get('/user', 'UserController@getUsers');
+    Route::post('/user/add', 'UserController@addUsers');
+    Route::post('/user/remove', 'UserController@removeUsers');
 });
 
 //=========================== CLASS ============================================//
