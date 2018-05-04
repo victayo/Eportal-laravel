@@ -2,6 +2,7 @@
 
 namespace Eportal\Models\User;
 
+use Eportal\Models\EportalClass;
 use Eportal\Models\School;
 use Eportal\Models\Session;
 use Eportal\Models\Term;
@@ -26,5 +27,9 @@ class SchoolUser extends Model
         return SessionUser::users($session, $term)
             ->join('school_users', 'session_users.id', '=', 'session_user_id')
             ->where('school_id', $school->getId());
+    }
+
+    public function eportalClass(){
+        return $this->belongsToMany(EportalClass::class, 'class_users', 'school_user_id', 'class_id');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Eportal\Models\User;
 
+use Eportal\Models\School;
 use Eportal\Models\Session;
 use Eportal\Models\Term;
 use Illuminate\Database\Eloquent\Model;
@@ -16,5 +17,9 @@ class SessionUser extends Model
             ->where('session_id', $session->getId())
             ->where('term_id', $term->getId())
             ->select('users.*');
+    }
+
+    public function schools(){
+        return $this->belongsToMany(School::class, 'school_users');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Eportal\Models\User;
 
+use Eportal\Models\Department;
 use Eportal\Models\EportalClass;
 use Eportal\Models\School;
 use Eportal\Models\Session;
@@ -29,5 +30,9 @@ class ClassUser extends Model
         return SchoolUser::users($school, $session, $term)
             ->join('class_users', 'class_users.school_user_id', '=', 'school_users.id')
             ->where('class_id', $class->getId());
+    }
+
+    public function department(){
+        return $this->belongsToMany(Department::class, 'department_users');
     }
 }

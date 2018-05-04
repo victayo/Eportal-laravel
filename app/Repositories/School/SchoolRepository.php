@@ -216,7 +216,7 @@ class SchoolRepository implements SchoolRepositoryInterface
         if(!$stu){
             return false;
         }
-        $school->sessionUser()->attach($stu->id);
+        $stu->schools()->attach($school->getId());
         return true;
     }
 
@@ -249,7 +249,7 @@ class SchoolRepository implements SchoolRepositoryInterface
         }
         $sessionService = $this->getSessionService();
         $stu = $sessionService->getSessionTermUser($user, $session, $term);
-        $school->sessionUser()->detach($stu->id);
+        $stu->schools()->detach($school->getId());
         return true;
     }
 

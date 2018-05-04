@@ -2,6 +2,7 @@
 
 namespace Eportal\Repositories\EportalClass;
 
+use Eportal\Models\ClassDepartment;
 use Eportal\Models\Department;
 use Eportal\Models\EportalClass;
 use Eportal\Models\School;
@@ -145,4 +146,12 @@ interface ClassRepositoryInterface {
      * @return ClassUser|null
      */
     public function getClassUser(User $user, School $school, EportalClass $class, Session $session, Term $term);
+
+    /**
+     * @param School $school
+     * @param EportalClass $class
+     * @param Department $department
+     * @return ClassDepartment|null
+     */
+    public function getClassDepartment(School $school, EportalClass $class, Department $department);
 }

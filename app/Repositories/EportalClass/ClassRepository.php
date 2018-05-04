@@ -222,7 +222,7 @@ class ClassRepository implements ClassRepositoryInterface {
         if($this->hasUser($user, $school, $class, $session, $term)){
             return false;
         }
-        $class->schoolUser()->attach($schoolUser->id);
+        $schoolUser->eportalClass()->attach($class->getId());
         return true;
     }
 
@@ -260,7 +260,7 @@ class ClassRepository implements ClassRepositoryInterface {
         if(!$this->hasUser($user, $school, $class, $session, $term)){
             return false;
         }
-        $class->schoolUser()->detach($schoolUser->id);
+        $schoolUser->eportalClass()->detach($class->getId());
         return true;
     }
 

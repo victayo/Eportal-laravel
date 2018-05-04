@@ -13,8 +13,4 @@ class EportalClass extends AbstractProperty
             ->join('class_users', 'class_users.school_user_id', '=', 'school_users.id')
             ->where('class_id', $class->getId());
     }
-
-    public function schoolUser(){
-        return $this->belongsToMany(SchoolUser::class, 'class_users', 'class_id');
-    }
 }
