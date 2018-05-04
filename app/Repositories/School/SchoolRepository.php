@@ -94,7 +94,7 @@ class SchoolRepository implements SchoolRepositoryInterface
         if ($this->hasClass($school, $class)) {
             return false;
         }
-        SchoolClass::create(['school_id' => $school->getId(), 'class_id' => $class->getId()]);
+        $school->classes()->attach($class->getId());
         return true;
     }
 
@@ -126,13 +126,7 @@ class SchoolRepository implements SchoolRepositoryInterface
      */
     public function getClasses(School $school)
     {
-        $classes = SchoolClass::classes($school)->get();
-        $col = $classes->map(function ($class) {
-            $model = new EportalClass();
-            $model->forceFill($class->toArray());
-            return $model;
-        });
-        return $col;
+        return $school->classes()->get();
     }
 
     /**
@@ -140,7 +134,7 @@ class SchoolRepository implements SchoolRepositoryInterface
      * @return Collection
      */
     public function getUnaddedClasses(School $school){
-        $addedClasses = SchoolClass::classes($school)->pluck('id')->toArray();
+        $addedClasses = $school->classes()->get()->pluck('id')->toArray();
         return EportalClass::whereNotIn('id', $addedClasses)->get();
     }
     /**
@@ -164,10 +158,11 @@ class SchoolRepository implements SchoolRepositoryInterface
      */
     public function removeClass(School $school, EportalClass $class)
     {
-        $remove = SchoolClass::where('school_id', $school->getId())
-            ->where('class_id', $class->getId())
-            ->delete();
-        return boolval($remove);
+        if(!$this->hasClass($school, $class)){
+            return false;
+        }
+        $school->classes()->detach($class->getId());
+        return true;
     }
 
     /**
@@ -213,15 +208,15 @@ class SchoolRepository implements SchoolRepositoryInterface
      */
     public function addUser(User $user, School $school, Session $session, Term $term)
     {
+        if($this->hasUser($user, $school, $session, $term)){
+            return false;
+        }
         $sessionService = $this->getSessionService();
         $stu = $sessionService->getSessionTermUser($user, $session, $term);
         if(!$stu){
             return false;
         }
-        SchoolUser::create([
-            'session_user_id' => $stu->id,
-            'school_id' => $school->getId()
-        ]);
+        $school->sessionUser()->attach($stu->id);
         return true;
     }
 
@@ -246,15 +241,15 @@ class SchoolRepository implements SchoolRepositoryInterface
      * @param Session $session
      * @param Term $term
      * @return bool
-     * @throws \Exception
      */
     public function removeUser(User $user, School $school, Session $session, Term $term)
     {
-        $su = $this->getSchoolUser($user, $school, $session, $term);
-        if(!$su){
+        if(!$this->hasUser($user, $school, $session, $term)){
             return false;
         }
-        $su->delete();
+        $sessionService = $this->getSessionService();
+        $stu = $sessionService->getSessionTermUser($user, $session, $term);
+        $school->sessionUser()->detach($stu->id);
         return true;
     }
 
@@ -274,6 +269,17 @@ class SchoolRepository implements SchoolRepositoryInterface
         return SchoolUser::where('session_user_id', $stu->id)
             ->where('school_id', $school->getId())
             ->first();
+    }
+
+    /**
+     * @param User $user
+     * @param School $school
+     * @param Session $session
+     * @param Term $term
+     * @return bool
+     */
+    public function hasUser(User $user, School $school, Session $session, Term $term){
+        return boolval($this->getSchoolUser($user, $school, $session, $term));
     }
 
     /**

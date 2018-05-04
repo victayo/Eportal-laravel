@@ -9,6 +9,7 @@ use Eportal\Models\SessionTerm;
 use Eportal\Models\User\SchoolUser;
 use Eportal\Models\User\SessionUser;
 use Eportal\Repositories\School\SchoolRepository;
+use function foo\func;
 use Tests\Feature\EportalProperty;
 use function factory;
 
@@ -23,13 +24,6 @@ class SchoolRepositoryTest extends EportalProperty {
     public function setUp() {
         parent::setUp();
         $this->schoolRepository = new SchoolRepository();
-    }
-
-    public function testGetSchools() {
-        $amt = 5;
-        $this->getSchools($amt);
-        $result = $this->schoolRepository->getSchools();
-        $this->assertEquals($amt, $result->count());
     }
 
     public function testGetClasses() {
@@ -66,13 +60,46 @@ class SchoolRepositoryTest extends EportalProperty {
         $session = $this->getSessions()->first();
         $school = $this->getSchools()->first();
         $term = $this->getTerms()->first();
-        $sessionTerm = SessionTerm::create(['session_id' => $session->getId(), 'term_id' => $term->getId()]);
+        $sessionTerm = $this->createSessionTerm($session, $term);
         $users = $this->getUsers($amt);
         $users->map(function($user) use ($sessionTerm, $school){
-            $su = SessionUser::create(['user_id' => $user->id, 'session_term_id' => $sessionTerm->id]);
-            return SchoolUser::create(['school_id' => $school->getId(), 'session_user_id' => $su->id]);
+            $sessionUser = $this->addToSession($user, $sessionTerm);
+            $this->addToSchool($school, $sessionUser);
         });
         $schoolUsers = $this->schoolRepository->getUsers($school, $session, $term);
         $this->assertEquals($amt, $schoolUsers->count());
+    }
+
+    public function testAddUser(){
+        $session = $this->getSessions()->first();
+        $term = $this->getTerms()->first();
+        $school = $this->getSchools()->first();
+        $user = $this->getUsers()->first();
+        $sessionTerm = $this->createSessionTerm($session, $term);
+        $sessionUser = $this->addToSession($user, $sessionTerm);
+        $success = $this->schoolRepository->addUser($user, $school, $session, $term);
+        $this->assertTrue($success);
+        $this->assertDatabaseHas('school_users',['school_id' => $school->getId(), 'session_user_id' => $sessionUser->id]);
+        /*
+         * create a new session. Don't add user to session.
+         */
+        $session = $this->getSessions()->first();
+        $this->createSessionTerm($session, $term);
+        $success = $this->schoolRepository->addUser($user, $school, $session, $term);
+        $this->assertFalse($success);
+    }
+
+    public function testRemoveUser(){
+        $session = $this->getSessions()->first();
+        $term = $this->getTerms()->first();
+        $school = $this->getSchools()->first();
+        $user = $this->getUsers()->first();
+        $sessionTerm = $this->createSessionTerm($session, $term);
+        $sessionUser = $this->addToSession($user, $sessionTerm);
+        $this->addToSchool($school, $sessionUser);
+        $this->assertDatabaseHas('school_users', ['school_id' => $school->getId(), 'session_user_id' => $sessionUser->id]);
+        $success = $this->schoolRepository->removeUser($user, $school, $session, $term);
+        $this->assertTrue($success);
+        $this->assertDatabaseMissing('school_users', ['school_id' => $school->getId(), 'session_user_id' => $sessionUser->id]);
     }
 }

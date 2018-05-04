@@ -12,8 +12,8 @@ use Eportal\Models\User\ClassUser;
 use Eportal\Models\User\User;
 use Eportal\Repositories\School\SchoolRepository;
 use Eportal\Repositories\School\SchoolRepositoryInterface;
-use function app;
 use Illuminate\Database\Eloquent\Collection;
+use function app;
 
 /**
  * Description of ClassRepository
@@ -54,8 +54,8 @@ class ClassRepository implements ClassRepositoryInterface {
         if ($this->hasDepartment($school, $class, $department)) {
             return false;
         }
-        $id = $this->getSchoolRepository()->getSchoolClass($school, $class)->id;
-        ClassDepartment::create(['school_class_id' => $id, 'department_id' => $department->getId()]);
+        $schoolClass = $this->getSchoolRepository()->getSchoolClass($school, $class);
+        $schoolClass->departments()->attach($department->getId());
         return true;
     }
 
@@ -110,13 +110,11 @@ class ClassRepository implements ClassRepositoryInterface {
      * @return Collection
      */
     public function getDepartments(School $school, EportalClass $class) {
-        $classDepts = ClassDepartment::departments($school, $class)->get();
-        $departments = $classDepts->map(function ($department) {
-            $model = new Department();
-            $model->forceFill($department->toArray());
-            return $model;
-        });
-        return $departments;
+        $schoolClass = $this->getSchoolRepository()->getSchoolClass($school, $class);
+        if(!$schoolClass){
+            return collect();
+        }
+        return $schoolClass->departments()->get();
     }
 
     /**
@@ -125,7 +123,7 @@ class ClassRepository implements ClassRepositoryInterface {
      * @return Collection
      */
     public function getUnaddedDepartments(School $school, EportalClass $class){
-        $departments = ClassDepartment::departments($school, $class)->pluck('id')->toArray();
+        $departments = $this->getDepartments($school, $class)->pluck('id')->toArray();
         return Department::WhereNotIn('id', $departments)->get();
     }
 
@@ -158,10 +156,8 @@ class ClassRepository implements ClassRepositoryInterface {
             return false;
         }
         $sc = $this->getSchoolRepository()->getSchoolClass($school, $class);
-        $cd = ClassDepartment::where('school_class_id', $sc->id)
-                ->where('department_id', $department->getId())
-                ->first();
-        return $cd->delete();
+        $sc->departments()->detach($department->getId());
+        return true;
     }
 
     /**
@@ -206,8 +202,7 @@ class ClassRepository implements ClassRepositoryInterface {
         if(!$sc){
             return null;
         }
-        return ClassDepartment::where(['school_class_id' => $sc->id, 'department_id' => $department->getId()])
-                ->first();
+        return ClassDepartment::where(['school_class_id' => $sc->id, 'department_id' => $department->getId()])->first();
     }
 
     /**
@@ -224,14 +219,10 @@ class ClassRepository implements ClassRepositoryInterface {
         if(!$schoolUser){
             return false;
         }
-        $classUser = $this->getClassUser($user, $school, $class, $session, $term);
-        if($classUser){ //user already added to class
+        if($this->hasUser($user, $school, $class, $session, $term)){
             return false;
         }
-        ClassUser::create([
-            'school_user_id' => $schoolUser->id,
-            'class_id' => $class->getId()
-        ]);
+        $class->schoolUser()->attach($schoolUser->id);
         return true;
     }
 
@@ -244,7 +235,11 @@ class ClassRepository implements ClassRepositoryInterface {
      */
     public function getUsers(School $school, EportalClass $class, Session $session, Term $term)
     {
-        return EportalClass::users($school, $class, $session, $term)->get();
+        $users = EportalClass::users($school, $class, $session, $term)->get();
+        return $users->map(function ($user){
+            $u = new User();
+            return $u->forceFill($user->toArray());
+        });
     }
 
     /**
@@ -262,11 +257,10 @@ class ClassRepository implements ClassRepositoryInterface {
         if(!$schoolUser){
             return false;
         }
-        $classUser = $this->getClassUser($user, $school, $class, $session, $term);
-        if(!$classUser){ //user not in class
+        if(!$this->hasUser($user, $school, $class, $session, $term)){
             return false;
         }
-        $classUser->delete();
+        $class->schoolUser()->detach($schoolUser->id);
         return true;
     }
 
@@ -289,6 +283,9 @@ class ClassRepository implements ClassRepositoryInterface {
             ->first();
     }
 
+    public function hasUser(User $user, School $school, EportalClass $class, Session $session, Term $term){
+        return boolval($this->getClassUser($user, $school, $class, $session, $term));
+    }
     /**
      * SchoolRepositoryInterface
      */

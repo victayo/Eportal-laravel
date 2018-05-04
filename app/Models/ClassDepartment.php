@@ -18,4 +18,8 @@ class ClassDepartment extends Model
             ->select('departments.*')
             ->orderBy('departments.name');
     }
+
+    public function subjects(){
+        return $this->belongsToMany(Subject::class, 'department_subject');
+    }
 }

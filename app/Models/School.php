@@ -12,4 +12,12 @@ class School extends AbstractProperty
             ->join('school_users', 'session_users.id', '=', 'session_user_id')
             ->where('school_id', $school->getId());
     }
+
+    public function sessionUser(){
+        return $this->belongsToMany(SessionUser::class, 'school_users');
+    }
+
+    public function classes(){
+        return $this->belongsToMany(EportalClass::class, 'school_class', 'school_id', 'class_id');
+    }
 }

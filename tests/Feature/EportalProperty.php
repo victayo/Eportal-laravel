@@ -6,8 +6,12 @@ use Eportal\Models\Department;
 use Eportal\Models\EportalClass;
 use Eportal\Models\School;
 use Eportal\Models\Session;
+use Eportal\Models\SessionTerm;
 use Eportal\Models\Subject;
 use Eportal\Models\Term;
+use Eportal\Models\User\ClassUser;
+use Eportal\Models\User\SchoolUser;
+use Eportal\Models\User\SessionUser;
 use Eportal\Models\User\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -16,37 +20,7 @@ use function factory;
 
 abstract class EportalProperty extends TestCase {
 
-    use RefreshDatabase;
-
-    /**
-     * @var Session
-     */
-    protected $session;
-
-    /**
-     * @var Term
-     */
-    protected $term;
-
-    /**
-     * @var School
-     */
-    protected $school;
-
-    /**
-     * @var EportalClass
-     */
-    protected $class;
-
-    /**
-     * @var Department
-     */
-    protected $department;
-
-    /**
-     * @var Subject
-     */
-    protected $subject;
+//    use RefreshDatabase;
 
     /**
      * @param int $amt
@@ -96,13 +70,29 @@ abstract class EportalProperty extends TestCase {
         return factory(Subject::class, $amt)->create();
     }
 
-    protected function getUsers($amt){
+    protected function getUsers($amt = 1){
         return factory(User::class, $amt)->create();
     }
 
-    protected function sessionTerm(){
-        $this->session = $this->getSessions()->first();
-        $this->term = $this->getTerms()->first();
-        $this->school = $this->getSchools()->first();
+    protected function createSessionTerm($session, $term){
+        return SessionTerm::create(['session_id' => $session->getId(), 'term_id' => $term->getId()]);
+    }
+
+    protected function addToSession($user, $sessionTerm){
+        return SessionUser::create(['user_id' => $user->id, 'session_term_id' => $sessionTerm->id]);
+    }
+
+    protected function addToSchool($school, $sessionUser){
+        return SchoolUser::create([
+            'school_id' => $school->getId(),
+            'session_user_id' => $sessionUser->id
+        ]);
+    }
+
+    protected function addToClass($class, $schoolUser){
+        return ClassUser::create([
+            'school_user_id' => $schoolUser->id,
+            'class_id' => $class->getId()
+        ]);
     }
 }

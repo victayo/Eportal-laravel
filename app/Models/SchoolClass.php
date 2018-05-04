@@ -22,4 +22,8 @@ class SchoolClass extends Model
                 ->select('schools.*')
                 ->orderBy('schools.name');
     }
+
+    public function departments(){
+        return $this->belongsToMany(Department::class, 'class_department');
+    }
 }
