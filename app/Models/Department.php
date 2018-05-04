@@ -2,6 +2,8 @@
 
 namespace Eportal\Models;
 
+use Eportal\Models\User\ClassUser;
+
 class Department extends AbstractProperty
 {
     const DEPARTMENT_DEFAULT = 'default';

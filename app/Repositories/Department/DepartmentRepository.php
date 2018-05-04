@@ -5,6 +5,7 @@ use Eportal\Models\Department;
 use Eportal\Models\DepartmentSubject;
 use Eportal\Models\EportalClass;
 use Eportal\Models\School;
+use Eportal\Models\SchoolClass;
 use Eportal\Models\Session;
 use Eportal\Models\Subject;
 use Eportal\Models\Term;
@@ -45,7 +46,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         if (!$cd) {
             return false;
         }
-        DepartmentSubject::create(['class_department_id' => $cd->id, 'subject_id' => $subject->getId()]);
+        $cd->subjects()->attach($subject->getId());
         return true;
     }
 
@@ -125,13 +126,11 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      */
     public function getSubjects(School $school, EportalClass $class, Department $department)
     {
-        $deptSubjects = DepartmentSubject::subjects($school, $class, $department)->get();
-        $subjects = $deptSubjects->map(function($sub){
-            $subject = new Subject();
-            $subject->forceFill($sub->toArray());
-            return $subject;
-        });
-        return $subjects;
+        $cd = $this->getClassRepository()->getClassDepartment($school, $class, $department);
+        if (!$cd) {
+            return collect();
+        }
+        return $cd->subjects()->get();
     }
 
     /**
@@ -159,10 +158,8 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         if (!$cd) {
             return false;
         }
-        $remove = DepartmentSubject::where('class_department_id', $cd->id)
-            ->where('subject_id', $subject->getId())
-            ->delete();
-        return boolval($remove);
+        $cd->subjects()->detach($subject->getId());
+        return true;
     }
 
     /**
@@ -252,18 +249,14 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      */
     public function addUser(User $user, School $school, EportalClass $class, Department $department, Session $session, Term $term)
     {
+        if($this->hasUser($user, $school, $class, $department, $session, $term)){
+            return false;
+        }
         $classUser = $this->getClassRepository()->getClassUser($user, $school, $class, $session, $term);
         if(!$classUser){
             return false;
         }
-        $du = $this->getDepartmentUser($user, $school, $class, $department, $session, $term);
-        if($du){
-            return false;
-        }
-        DepartmentUser::create([
-            'class_user_id' => $classUser->id,
-            'department_id' => $department->getId()
-        ]);
+        $classUser->department()->attach($department->getId());
         return true;
     }
 
@@ -288,15 +281,28 @@ class DepartmentRepository implements DepartmentRepositoryInterface
      * @param Session $session
      * @param Term $term
      * @return bool|null
-     * @throws \Exception
      */
     public function removeUser(User $user, School $school, EportalClass $class, Department $department, Session $session, Term $term)
     {
-        $du = $this->getDepartmentUser($user, $school, $class, $department, $session, $term);
-        if(!$du){
+        if(!$this->hasUser($user, $school, $class, $department, $session, $term)){
             return false;
         }
-        return $du->delete();
+        $classUser = $this->getClassRepository()->getClassUser($user, $school, $class, $session, $term);
+        $classUser->department()->detach($department->getId());
+        return true;
+    }
+
+    /**
+     * @param User $user
+     * @param School $school
+     * @param EportalClass $class
+     * @param Department $department
+     * @param Session $session
+     * @param Term $term
+     * @return bool
+     */
+    public function hasUser(User $user, School $school, EportalClass $class, Department $department, Session $session, Term $term){
+        return boolval($this->getDepartmentUser($user, $school, $class, $department, $session, $term));
     }
 
     /**

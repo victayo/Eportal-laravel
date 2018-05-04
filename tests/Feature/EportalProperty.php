@@ -10,6 +10,7 @@ use Eportal\Models\SessionTerm;
 use Eportal\Models\Subject;
 use Eportal\Models\Term;
 use Eportal\Models\User\ClassUser;
+use Eportal\Models\User\DepartmentUser;
 use Eportal\Models\User\SchoolUser;
 use Eportal\Models\User\SessionUser;
 use Eportal\Models\User\User;
@@ -93,6 +94,13 @@ abstract class EportalProperty extends TestCase {
         return ClassUser::create([
             'school_user_id' => $schoolUser->id,
             'class_id' => $class->getId()
+        ]);
+    }
+
+    protected function addToDepartment($department, $classUser){
+        return DepartmentUser::create([
+            'class_user_id' => $classUser->id,
+            'department_id' => $department->getId()
         ]);
     }
 }
