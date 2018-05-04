@@ -1,16 +1,21 @@
 <?php
 
-namespace Eportal\Http\Controllers\School;
+namespace Eportal\Http\Controllers\EportalClass;
 
-use Eportal\Http\Controllers\Controller;
+use Eportal\Repositories\EportalClass\ClassRepositoryInterface;
 use Eportal\Repositories\School\SchoolRepositoryInterface;
 use Eportal\Repositories\Session\SessionRepositoryInterface;
 use Eportal\Repositories\Term\TermRepositoryInterface;
 use Eportal\Repositories\User\UserServiceInterface;
 use Illuminate\Http\Request;
+use Eportal\Http\Controllers\Controller;
 
 class UserController extends Controller
 {
+    /**
+     * @var ClassRepositoryInterface
+     */
+    protected $classService;
     /**
      *
      * @var SchoolRepositoryInterface
@@ -32,22 +37,24 @@ class UserController extends Controller
      */
     protected $userService;
 
-    public function __construct(SchoolRepositoryInterface $schoolService)
+    public function __construct(ClassRepositoryInterface $classService)
     {
-        $this->schoolService = $schoolService;
+        $this->classService = $classService;
     }
 
     public function getUsers(Request $request)
     {
         $this->validate($request, [
             'school' => 'required|exists:schools,id',
+            'class' => 'required|exists:eportal_classes, id',
             'session' => 'required|exists:sessions,id',
             'term' => 'required|exists:terms,id'
         ]);
-        $school = $this->schoolService->findById($request->query('school'));
+        $school = $this->getSchoolService()->findById($request->query('school'));
+        $class = $this->classService->findById($request->query('class'));
         $session = $this->getSessionService()->findById($request->query('session'));
         $term = $this->getTermService()->findById($request->query('term'));
-        $users = $this->schoolService->getUsers($school, $session, $term);
+        $users = $this->classService->getUsers($school, $class, $session, $term);
         return response()->json(['success' => true, 'users' => $users]);
     }
 
@@ -55,11 +62,13 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'school' => 'required|exists:schools,id',
+            'class' => 'required|exists:eportal_classes, id',
             'session' => 'required|exists:sessions,id',
             'term' => 'required|exists:terms,id',
             'users.*' => 'required|exists:users,id'
         ]);
-        $school = $this->schoolService->findById($request->input('school'));
+        $school = $this->getSchoolService()->findById($request->input('school'));
+        $class = $this->classService->findById($request->input('class'));
         $session = $this->getSessionService()->findById($request->input('session'));
         $term = $this->getTermService()->findById($request->input('term'));
         $users = $request->input('users');
@@ -67,7 +76,7 @@ class UserController extends Controller
         $added = 0;
         foreach ($users as $user) {
             $user = $userService->findById($user);
-            $success = $this->schoolService->addUser($user, $school, $session, $term);
+            $success = $this->classService->addUser($user, $school, $class, $session, $term);
             !$success ?: $added++;
         }
         return response()->json(['success' => true, 'added' => $added]);
@@ -77,11 +86,13 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'school' => 'required|exists:schools,id',
+            'class' => 'required|exists:eportal_classes, id',
             'session' => 'required|exists:sessions,id',
             'term' => 'required|exists:terms,id',
             'users.*' => 'required|exists:users,id'
         ]);
         $school = $this->schoolService->findById($request->input('school'));
+        $class = $this->classService->findById($request->input('class'));
         $session = $this->getSessionService()->findById($request->input('session'));
         $term = $this->getTermService()->findById($request->input('term'));
         $users = $request->input('users');
@@ -89,10 +100,21 @@ class UserController extends Controller
         $removed = 0;
         foreach ($users as $user) {
             $user = $userService->findById($user);
-            $success = $this->schoolService->removeUser($user, $school, $session, $term);
+            $success = $this->classService->removeUser($user, $school, $class, $session, $term);
             !$success ?: $removed++;
         }
         return response()->json(['success' => true, 'added' => $removed]);
+    }
+
+    /**
+     * @return SchoolRepositoryInterface
+     */
+    public function getSchoolService()
+    {
+        if (!$this->schoolService) {
+            $this->schoolService = app(SchoolRepositoryInterface::class);
+        }
+        return $this->schoolService;
     }
 
     /**
