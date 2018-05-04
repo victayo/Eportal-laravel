@@ -33,7 +33,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->departmentRepository->setClassRepository($this->classRepository);
     }
 
-    public function testAddSubject(){
+    public function testAddSubject()
+    {
         $school = $this->getSchools()->first();
         $class = $this->getClasses()->first();
         $department = $this->getDepartments()->first();
@@ -48,7 +49,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertDatabaseHas('department_subject', ['class_department_id' => $classDept->id, 'subject_id' => $subject->getId()]);
     }
 
-    public function testGetSubjects(){
+    public function testGetSubjects()
+    {
         $amt = 5;
         $school = $this->getSchools()->first();
         $class = $this->getClasses()->first();
@@ -56,7 +58,7 @@ class DepartmentRepositoryTest extends EportalProperty
         $subjects = $this->getSubjects($amt);
         $sc = $this->getSchoolClass($school, $class);
         $classDept = $this->getClassDepartment($sc, $department);
-        $subjects->map(function ($subject) use ($classDept){
+        $subjects->map(function ($subject) use ($classDept) {
             $this->getDepartmentSubject($classDept, $subject);
         });
         $this->classRepository->expects($this->any())
@@ -67,7 +69,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertInstanceOf(Subject::class, $result->first());
     }
 
-    public function testRemoveSubject(){
+    public function testRemoveSubject()
+    {
         $school = $this->getSchools()->first();
         $class = $this->getClasses()->first();
         $department = $this->getDepartments()->first();
@@ -83,7 +86,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertDatabaseMissing('department_subject', ['class_department_id' => $classDept->id, 'subject_id' => $subject->getId()]);
     }
 
-    public function testAddUser(){
+    public function testAddUser()
+    {
         $session = $this->getSessions()->first();
         $term = $this->getTerms()->first();
         $school = $this->getSchools()->first();
@@ -102,7 +106,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertDatabaseHas('department_users', ['class_user_id' => $classUser->id, 'department_id' => $department->getId()]);
     }
 
-    public function testRemoveUser(){
+    public function testRemoveUser()
+    {
         $session = $this->getSessions()->first();
         $term = $this->getTerms()->first();
         $school = $this->getSchools()->first();
@@ -122,7 +127,8 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertDatabaseMissing('department_users', ['class_user_id' => $classUser->id, 'department_id' => $department->getId()]);
     }
 
-    public function testGetUsers(){
+    public function testGetUsers()
+    {
         $amt = 5;
         $session = $this->getSessions()->first();
         $term = $this->getTerms()->first();
@@ -131,7 +137,7 @@ class DepartmentRepositoryTest extends EportalProperty
         $department = $this->getDepartments()->first();
         $sessionTerm = $this->createSessionTerm($session, $term);
         $users = $this->getUsers($amt);
-        $users->map(function ($user) use($sessionTerm, $school, $class, $department){
+        $users->map(function ($user) use ($sessionTerm, $school, $class, $department) {
             $sessionUser = $this->addToSession($user, $sessionTerm);
             $schoolUser = $this->addToSchool($school, $sessionUser);
             $classUser = $this->addToClass($class, $schoolUser);
@@ -141,15 +147,18 @@ class DepartmentRepositoryTest extends EportalProperty
         $this->assertEquals($amt, $result->count());
     }
 
-    private function getSchoolClass($school, $class){
+    private function getSchoolClass($school, $class)
+    {
         return SchoolClass::create(['school_id' => $school->getId(), 'class_id' => $class->getId()]);
     }
 
-    private function getClassDepartment($schoolClass, $department){
+    private function getClassDepartment($schoolClass, $department)
+    {
         return ClassDepartment::create(['department_id' => $department->getId(), 'school_class_id' => $schoolClass->id]);
     }
 
-    private function getDepartmentSubject($classDept, $subject){
+    private function getDepartmentSubject($classDept, $subject)
+    {
         return DepartmentSubject::create(['subject_id' => $subject->getId(), 'class_department_id' => $classDept->id]);
     }
 }

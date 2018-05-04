@@ -13,6 +13,7 @@ use Eportal\Models\User\ClassUser;
 use Eportal\Models\User\DepartmentUser;
 use Eportal\Models\User\SchoolUser;
 use Eportal\Models\User\SessionUser;
+use Eportal\Models\User\SubjectUser;
 use Eportal\Models\User\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -101,6 +102,13 @@ abstract class EportalProperty extends TestCase {
         return DepartmentUser::create([
             'class_user_id' => $classUser->id,
             'department_id' => $department->getId()
+        ]);
+    }
+
+    protected function addToSubject($subject, $deptUser){
+        return SubjectUser::create([
+            'department_user_id' => $deptUser->id,
+            'subject_id' => $subject->getId()
         ]);
     }
 }

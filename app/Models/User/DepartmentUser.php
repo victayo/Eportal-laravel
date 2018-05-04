@@ -6,6 +6,7 @@ use Eportal\Models\Department;
 use Eportal\Models\EportalClass;
 use Eportal\Models\School;
 use Eportal\Models\Session;
+use Eportal\Models\Subject;
 use Eportal\Models\Term;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,5 +33,10 @@ class DepartmentUser extends Model
         return ClassUser::users($school, $class, $session, $term)
             ->join('department_users', 'department_users.class_user_id', '=', 'class_users.id')
             ->where('department_id', $department->getId());
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'subject_users');
     }
 }

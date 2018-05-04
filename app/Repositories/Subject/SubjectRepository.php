@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\Collection;
  *
  * @author OKALA
  */
-class SubjectRepository implements SubjectRepositoryInterface {
+class SubjectRepository implements SubjectRepositoryInterface
+{
 
     /**
      * @var DepartmentRepositoryInterface
@@ -30,7 +31,8 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param array $attributes
      * @return Subject
      */
-    public function create(array $attributes) {
+    public function create(array $attributes)
+    {
         $attributes['name'] = strtolower(trim($attributes['name']));
         return Subject::create($attributes);
     }
@@ -40,7 +42,8 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @return bool|null
      * @throws \Exception
      */
-    public function delete(Subject $subject) {
+    public function delete(Subject $subject)
+    {
         return $subject->delete();
     }
 
@@ -48,7 +51,8 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param $id
      * @return Subject
      */
-    public function findById($id) {
+    public function findById($id)
+    {
         return Subject::find($id);
     }
 
@@ -56,14 +60,16 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param $name
      * @return Subject
      */
-    public function findByName($name) {
+    public function findByName($name)
+    {
         return Subject::where('name', strtolower(trim($name)))->first();
     }
 
     /**
      * @return Collection
      */
-    public function getSubjects() {
+    public function getSubjects()
+    {
         return Subject::get();
     }
 
@@ -72,7 +78,8 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param array $attributes
      * @return bool
      */
-    public function update(Subject $subject, array $attributes) {
+    public function update(Subject $subject, array $attributes)
+    {
         return $subject->update($attributes);
     }
 
@@ -88,17 +95,14 @@ class SubjectRepository implements SubjectRepositoryInterface {
      */
     public function addUser(User $user, School $school, EportalClass $class, Department $department, Subject $subject, Session $session, Term $term)
     {
-        if($this->getSubjectUser($user, $school, $class, $department, $subject, $session, $term)){
+        if ($this->hasUser($user, $school, $class, $department, $subject, $session, $term)) {
             return false;
         }
         $du = $this->getDepartmentRepository()->getDepartmentUser($user, $school, $class, $department, $session, $term);
-        if(!$du){
+        if (!$du) {
             return false;
         }
-        SubjectUser::create([
-            'department_user_id' => $du->id,
-            'subject_id' => $subject->getId()
-        ]);
+        $du->subjects()->attach($subject->getId());
         return true;
     }
 
@@ -125,15 +129,15 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param Session $session
      * @param Term $term
      * @return bool|null
-     * @throws \Exception
      */
     public function removeUser(User $user, School $school, EportalClass $class, Department $department, Subject $subject, Session $session, Term $term)
     {
-        $su = $this->getSubjectUser($user, $school, $class, $department, $subject, $session, $term);
-        if(!$su){
+        if (!$this->hasUser($user, $school, $class, $department, $subject, $session, $term)) {
             return false;
         }
-        return $su->delete();
+        $du = $this->getDepartmentRepository()->getDepartmentUser($user, $school, $class, $department, $session, $term);
+        $du->subjects()->detach($subject->getId());
+        return true;
     }
 
     /**
@@ -148,20 +152,26 @@ class SubjectRepository implements SubjectRepositoryInterface {
      */
     public function getSubjectUser(User $user, School $school, EportalClass $class, Department $department, Subject $subject, Session $session, Term $term)
     {
-       $du = $this->getDepartmentRepository()->getDepartmentUser($user, $school, $class, $department, $session, $term);
-       if(!$du){
-           return null;
-       }
-       return SubjectUser::where('department_user_id', $du->id)
-           ->where('subject_id', $subject->getId())
-           ->first();
+        $du = $this->getDepartmentRepository()->getDepartmentUser($user, $school, $class, $department, $session, $term);
+        if (!$du) {
+            return null;
+        }
+        return SubjectUser::where('department_user_id', $du->id)
+            ->where('subject_id', $subject->getId())
+            ->first();
+    }
+
+    public function hasUser(User $user, School $school, EportalClass $class, Department $department, Subject $subject, Session $session, Term $term)
+    {
+        return boolval($this->getSubjectUser($user, $school, $class, $department, $subject, $session, $term));
     }
 
     /**
      * @return DepartmentRepositoryInterface
      */
-    public function getDepartmentRepository(){
-        if(!$this->departmentRepository){
+    public function getDepartmentRepository()
+    {
+        if (!$this->departmentRepository) {
             $this->departmentRepository = app()->make(DepartmentRepository::class);
         }
         return $this->departmentRepository;
@@ -171,7 +181,8 @@ class SubjectRepository implements SubjectRepositoryInterface {
      * @param DepartmentRepositoryInterface $departmentRepository
      * @return $this
      */
-    public function setDepartmentRepository(DepartmentRepositoryInterface $departmentRepository){
+    public function setDepartmentRepository(DepartmentRepositoryInterface $departmentRepository)
+    {
         $this->departmentRepository = $departmentRepository;
         return $this;
     }
