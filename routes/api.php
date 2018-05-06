@@ -41,6 +41,10 @@ Route::group(['namespace' => 'EportalClass', 'prefix' => 'class'], function(){
     Route::get('/department', 'ClassController@getDepartments');
     Route::post('/department/add', 'ClassController@addDepartment');
     Route::post('department/remove', 'ClassController@removeDepartment');
+
+    Route::get('/user', 'UserController@getUsers');
+    Route::post('/user/add', 'UserController@addUsers');
+    Route::post('/user/remove', 'UserController@removeUsers');
 });
 
 //=========================== DEPARTMENT ============================================//
@@ -55,6 +59,10 @@ Route::group(['namespace' => 'Department', 'prefix' => 'department'], function()
     Route::get('/subject', 'DepartmentController@getSubjects');
     Route::post('/subject/add', 'DepartmentController@addSubject');
     Route::post('subject/remove', 'DepartmentController@removeSubject');
+
+    Route::get('/user', 'UserController@getUsers');
+    Route::post('/user/add', 'UserController@addUsers');
+    Route::post('/user/remove', 'UserController@removeUsers');
 });
 
 //=========================== SUBJECT ============================================//
@@ -65,6 +73,10 @@ Route::group(['namespace' => 'Subject', 'prefix' => 'subject'], function(){
     Route::post('/', 'SubjectController@store');
     Route::post('/{subject}', 'SubjectController@update');
     Route::delete('/{subject}', 'SubjectController@delete');
+
+    Route::get('/user', 'UserController@getUsers');
+    Route::post('/user/add', 'UserController@addUsers');
+    Route::post('/user/remove', 'UserController@removeUsers');
 });
 
 //=========================== SESSION ============================================//
@@ -79,6 +91,10 @@ Route::group(['namespace' => 'Session', 'prefix' => 'session'], function(){
     Route::get('/term', 'SessionController@getTerms');
     Route::post('/term/add', 'SessionController@addTerm');
     Route::post('/term/remove', 'SessionController@removeTerm');
+
+    Route::get('/user', 'UserController@getUsers');
+    Route::post('/user/add', 'UserController@addUsers');
+    Route::post('/user/remove', 'UserController@removeUsers');
 });
 
 //=========================== TERM ============================================//
