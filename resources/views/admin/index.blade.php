@@ -30,7 +30,6 @@
                                         <td style="text-align:left"><input type="checkbox"></td>
                                         <td style="text-align: right">{{$loop->index + 1}}</td>
                                         <td style="text-align: right">{{ $property->getName() }}</td>
-{{--                                        <td style="text-align: right"><a href="{{ route('admin.school.classes', [$property_name => $property->getId()]) }}">{{ $property->getName() }}</a></td>--}}
                                         <td style="text-align: right">
                                             @php
                                                 $new_edit = str_replace('?', $property->getId(), $edit_link);
