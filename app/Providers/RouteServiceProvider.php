@@ -16,6 +16,8 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected $namespace = 'Eportal\Http\Controllers';
 
+    protected $adminNamespace = 'Eportal\Http\Controllers\Admin';
+
     /**
      * Define your route model bindings, pattern filters, etc.
      *
@@ -39,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
-        //
+        $this->mapAdminWebRoutes();
     }
 
     /**
@@ -69,5 +71,11 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
+    }
+
+    protected function mapAdminWebRoutes(){
+        Route::prefix('admin')
+            ->namespace($this->adminNamespace)
+            ->group(base_path('routes/admin.php'));
     }
 }
