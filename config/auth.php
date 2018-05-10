@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Eportal\User::class,
+            'model' => \Eportal\Models\User\User::class
         ],
 
         // 'users' => [
