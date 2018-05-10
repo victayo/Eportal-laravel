@@ -212,7 +212,7 @@ class SessionRepository implements SessionRepositoryInterface{
      */
     public function removeUser(User $user, Session $session, Term $term)
     {
-        $stu = $this->getSessionTermUser($user, $session, $term);
+        $stu = $this->getSessionUser($user, $session, $term);
         if(!$stu){
             return false;
         }
@@ -228,7 +228,7 @@ class SessionRepository implements SessionRepositoryInterface{
      */
     public function hasUser(User $user, Session $session, Term $term)
     {
-       return boolval($this->getSessionTermUser($user, $session, $term));
+       return boolval($this->getSessionUser($user, $session, $term));
     }
 
     /**
@@ -251,7 +251,7 @@ class SessionRepository implements SessionRepositoryInterface{
      * @param Term $term
      * @return SessionUser|null
      */
-    public function getSessionTermUser(User $user, Session $session, Term $term)
+    public function getSessionUser(User $user, Session $session, Term $term)
     {
         $st = $this->getSessionTerm($session, $term);
         if(!$st){

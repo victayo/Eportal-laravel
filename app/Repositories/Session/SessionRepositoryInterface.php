@@ -133,5 +133,5 @@ interface SessionRepositoryInterface {
      * @param Term $term
      * @return SessionUser
      */
-    public function getSessionTermUser(User $user, Session $session, Term $term);
+    public function getSessionUser(User $user, Session $session, Term $term);
 }

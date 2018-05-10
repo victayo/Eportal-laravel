@@ -212,7 +212,7 @@ class SchoolRepository implements SchoolRepositoryInterface
             return false;
         }
         $sessionService = $this->getSessionService();
-        $stu = $sessionService->getSessionTermUser($user, $session, $term);
+        $stu = $sessionService->getSessionUser($user, $session, $term);
         if(!$stu){
             return false;
         }
@@ -248,7 +248,7 @@ class SchoolRepository implements SchoolRepositoryInterface
             return false;
         }
         $sessionService = $this->getSessionService();
-        $stu = $sessionService->getSessionTermUser($user, $session, $term);
+        $stu = $sessionService->getSessionUser($user, $session, $term);
         $stu->schools()->detach($school->getId());
         return true;
     }
@@ -262,7 +262,7 @@ class SchoolRepository implements SchoolRepositoryInterface
      */
     public function getSchoolUser(User $user, School $school, Session $session, Term $term)
     {
-        $stu = $this->getSessionService()->getSessionTermUser($user, $session, $term);
+        $stu = $this->getSessionService()->getSessionUser($user, $session, $term);
         if(!$stu){
             return null;
         }

@@ -267,7 +267,7 @@ class UserService implements UserServiceInterface
      */
     public function getSchools(User $user, Session $session, Term $term)
     {
-        $sessionUser = $this->getSessionService()->getSessionTermUser($user, $session, $term);
+        $sessionUser = $this->getSessionService()->getSessionUser($user, $session, $term);
         if (!$sessionUser) {
             return null;
         }
