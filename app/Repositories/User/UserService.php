@@ -15,6 +15,7 @@ use Eportal\Models\School;
 use Eportal\Models\Session;
 use Eportal\Models\Subject;
 use Eportal\Models\Term;
+use Eportal\Models\User\SchoolUser;
 use Eportal\Models\User\User;
 use Eportal\Repositories\Department\DepartmentRepository;
 use Eportal\Repositories\Department\DepartmentRepositoryInterface;
@@ -26,6 +27,7 @@ use Eportal\Repositories\Session\SessionRepository;
 use Eportal\Repositories\Session\SessionRepositoryInterface;
 use Eportal\Repositories\Subject\SubjectRepository;
 use Eportal\Repositories\Subject\SubjectRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UserService implements UserServiceInterface
@@ -70,7 +72,7 @@ class UserService implements UserServiceInterface
     {
         DB::beginTransaction();
         $user = $this->createUser($userAttributes);
-        if(!$user){
+        if (!$user) {
             return null;
         }
         $success = $this->register($user, $session, $term, $school, $class, $department, $subject);
@@ -109,11 +111,11 @@ class UserService implements UserServiceInterface
 
         $departmentService = $this->getDepartmentService();
         $subjectService = $this->getSubjectService();
-        if(null === $department){ //add user to default department. All classes must have at least one department
+        if (null === $department) { //add user to default department. All classes must have at least one department
             $department = $departmentService->findByName(Department::DEPARTMENT_DEFAULT);
             $subjects = $departmentService->getSubjects($school, $class, $department, $session, $term);
             $departmentService->addUser($user, $school, $class, $department, $session, $term);
-            foreach ($subjects as $subject){
+            foreach ($subjects as $subject) {
                 $subjectService->addUser($user, $school, $class, $department, $subject, $session, $term);
             }
             return true;
@@ -123,9 +125,9 @@ class UserService implements UserServiceInterface
         if (!$success) {
             return false;
         }
-        if(null === $subject){
+        if (null === $subject) {
             $subjects = $this->getDepartmentService()->getSubjects($school, $class, $department);
-            foreach ($subjects as $subject){
+            foreach ($subjects as $subject) {
                 $subjectService->addUser($user, $school, $class, $department, $subject, $session, $term);
             }
             return true;
@@ -147,9 +149,11 @@ class UserService implements UserServiceInterface
      * @param $id
      * @return User|null
      */
-    public function findById($id){
+    public function findById($id)
+    {
         return User::find($id);
     }
+
     /**
      * @return SessionRepositoryInterface
      */
@@ -255,4 +259,69 @@ class UserService implements UserServiceInterface
         return $this;
     }
 
+    /**
+     * @param User $user
+     * @param Session $session
+     * @param Term $term
+     * @return Collection|null
+     */
+    public function getSchools(User $user, Session $session, Term $term)
+    {
+        $sessionUser = $this->getSessionService()->getSessionTermUser($user, $session, $term);
+        if (!$sessionUser) {
+            return null;
+        }
+        return $sessionUser->schools()->get();
+    }
+
+    /**
+     * @param User $user
+     * @param School $school
+     * @param Session $session
+     * @param Term $term
+     * @return Collection|null
+     */
+    public function getClasses(User $user, School $school, Session $session, Term $term)
+    {
+        $schoolUser = $this->getSchoolService()->getSchoolUser($user, $school, $session, $term);
+        if (!$schoolUser) {
+            return null;
+        }
+        return $schoolUser->eportalClass()->get();
+    }
+
+    /**
+     * @param User $user
+     * @param School $school
+     * @param EportalClass $class
+     * @param Session $session
+     * @param Term $term
+     * @return Collection|null
+     */
+    public function getDepartments(User $user, School $school, EportalClass $class, Session $session, Term $term)
+    {
+        $classUser = $this->getClassService()->getClassUser($user, $school, $class, $session, $term);
+        if (!$classUser) {
+            return null;
+        }
+        return $classUser->department()->get();
+    }
+
+    /**
+     * @param User $user
+     * @param School $school
+     * @param EportalClass $class
+     * @param Department $department
+     * @param Session $session
+     * @param Term $term
+     * @return Collection|null
+     */
+    public function getSubjects(User $user, School $school, EportalClass $class, Department $department, Session $session, Term $term)
+    {
+        $departmentUser = $this->getDepartmentService()->getDepartmentUser($user, $school, $class, $department, $session, $term);
+        if (!$departmentUser) {
+            return null;
+        }
+        return $departmentUser->subjects()->get();
+    }
 }
