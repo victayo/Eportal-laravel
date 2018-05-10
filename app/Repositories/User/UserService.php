@@ -304,7 +304,7 @@ class UserService implements UserServiceInterface
         if (!$classUser) {
             return null;
         }
-        return $classUser->department()->get();
+        return $classUser->departments()->get();
     }
 
     /**

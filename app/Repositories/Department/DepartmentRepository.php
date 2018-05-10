@@ -256,7 +256,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
         if(!$classUser){
             return false;
         }
-        $classUser->department()->attach($department->getId());
+        $classUser->departments()->attach($department->getId());
         return true;
     }
 
@@ -288,7 +288,7 @@ class DepartmentRepository implements DepartmentRepositoryInterface
             return false;
         }
         $classUser = $this->getClassRepository()->getClassUser($user, $school, $class, $session, $term);
-        $classUser->department()->detach($department->getId());
+        $classUser->departments()->detach($department->getId());
         return true;
     }
 

@@ -32,7 +32,7 @@ class ClassUser extends Model
             ->where('class_id', $class->getId());
     }
 
-    public function department(){
+    public function departments(){
         return $this->belongsToMany(Department::class, 'department_users');
     }
 }
