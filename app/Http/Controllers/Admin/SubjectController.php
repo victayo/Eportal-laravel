@@ -15,6 +15,8 @@ class SubjectController extends Controller
      */
     protected $subjectService;
 
+    protected $property = 'subject';
+
     /**
      * SubjectController constructor.
      * @param SubjectRepositoryInterface $subjectService
@@ -27,7 +29,13 @@ class SubjectController extends Controller
     public function index()
     {
         $subjects = $this->subjectService->getSubjects();
-        return view('admin.subject.index', ['subjects' => $subjects]);
+        return view('admin.index', [
+            'properties' => $subjects,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.subject.create'),
+            'edit_link' => route('admin.subject.edit', ['subject' => '?']),
+            'delete_link' => route('admin.subject.delete')
+        ]);
     }
 
     public function store(Request $request)
@@ -39,7 +47,10 @@ class SubjectController extends Controller
             $this->subjectService->create($request->all());
             return redirect()->route('admin.subject.index');
         }
-        return view('admin.subject.create');
+        return view('admin.create', [
+            'property_name' => $this->property,
+            'create_link' => route('admin.subject.create')
+        ]);
     }
 
     public function update(Request $request, Subject $subject)
@@ -51,7 +62,11 @@ class SubjectController extends Controller
             $this->subjectService->update($subject, $request->all());
             return redirect()->route('admin.subject.index');
         }
-        return view('admin.subject.edit', ['subject' => $subject]);
+        return view('admin.edit', [
+            'property_name' => $this->property,
+            'property' => $subject,
+            'edit_link' => route('admin.subject.edit', ['subject' => $subject->getId()])
+        ]);
     }
 
     public function delete(Request $request)

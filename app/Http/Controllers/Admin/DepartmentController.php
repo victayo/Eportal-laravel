@@ -26,6 +26,8 @@ class DepartmentController extends Controller
      */
     protected $classService;
 
+    protected $property = 'department';
+
     /**
      * DepartmentController constructor.
      * @param DepartmentRepositoryInterface $departmentService
@@ -38,7 +40,13 @@ class DepartmentController extends Controller
     public function index()
     {
         $departments = $this->departmentService->getDepartments();
-        return view('admin.department.index', ['departments' => $departments]);
+        return view('admin.index', [
+            'properties' => $departments,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.department.create'),
+            'edit_link' => route('admin.department.edit', ['subject' => '?']),
+            'delete_link' => route('admin.department.delete')
+        ]);
     }
 
     public function store(Request $request)
@@ -50,7 +58,10 @@ class DepartmentController extends Controller
             $this->departmentService->create($request->all());
             return redirect()->route('admin.department.index');
         }
-        return view('admin.department.create');
+        return view('admin.create', [
+            'property_name' => $this->property,
+            'create_link' => route('admin.department.create')
+        ]);
     }
 
     public function update(Request $request, Department $department)
@@ -62,7 +73,11 @@ class DepartmentController extends Controller
             $this->departmentService->update($department, $request->all());
             return redirect()->route('admin.department.index');
         }
-        return view('admin.department.edit', ['department' => $department]);
+        return view('admin.edit', [
+            'property_name' => $this->property,
+            'property' => $department,
+            'edit_link' => route('admin.department.edit', ['department' => $department->getId()])
+        ]);
     }
 
     public function delete(Request $request)

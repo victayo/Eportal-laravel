@@ -14,6 +14,7 @@ class TermController extends Controller
      */
     protected $termService;
 
+    protected $property = 'term';
     /**
      * TermController constructor.
      * @param TermRepositoryInterface $termService
@@ -26,7 +27,13 @@ class TermController extends Controller
     public function index()
     {
         $terms = $this->termService->getTerms();
-        return view('admin.term.index', ['terms' => $terms]);
+        return view('admin.index', [
+            'properties' => $terms,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.term.create'),
+            'edit_link' => route('admin.term.edit', ['term' => '?']),
+            'delete_link' => route('admin.term.delete')
+        ]);
     }
 
     public function store(Request $request)
@@ -38,7 +45,10 @@ class TermController extends Controller
             $this->termService->create($request->all());
             return redirect()->route('admin.term.index');
         }
-        return view('admin.term.create');
+        return view('admin.create', [
+            'property_name' => $this->property,
+            'create_link' => route('admin.term.create')
+        ]);
     }
 
     public function update(Request $request, Term $term)
@@ -50,7 +60,11 @@ class TermController extends Controller
             $this->termService->update($term, $request->all());
             return redirect()->route('admin.term.index');
         }
-        return view('admin.term.edit', ['term' => $term]);
+        return view('admin.edit', [
+            'property_name' => $this->property,
+            'property' => $term,
+            'edit_link' => route('admin.term.edit', ['term' => $term->getId()])
+        ]);
     }
 
     public function delete(Request $request)

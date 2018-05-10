@@ -14,6 +14,8 @@ class SessionController extends Controller
      */
     protected $sessionService;
 
+    protected $property = 'session';
+
     /**
      * SessionController constructor.
      * @param SessionRepositoryInterface $sessionService
@@ -25,12 +27,21 @@ class SessionController extends Controller
     
     public function index(){
         $sessions = $this->sessionService->getSessions();
-        return view('admin.session.index', ['sessions' => $sessions]);
+        return view('admin.index', [
+            'properties' => $sessions,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.session.create'),
+            'edit_link' => route('admin.session.edit', ['session' => '?']),
+            'delete_link' => route('admin.session.delete')
+        ]);
     }
 
     public function store(Request $request){
         if($request->isMethod('GET')) {
-            return view('admin.session.create');
+            return view('admin.create', [
+                'property_name' => $this->property,
+                'create_link' => route('admin.session.create')
+            ]);
         }
         //method is post
         $this->validate($request, [
@@ -42,7 +53,11 @@ class SessionController extends Controller
 
     public function update(Request $request, Session $session){
         if($request->isMethod(Request::METHOD_GET)) {
-            return view('admin.session.edit', ['session' => $session]);
+            return view('admin.edit', [
+                'property_name' => $this->property,
+                'property' => $session,
+                'edit_link' => route('admin.session.edit', ['session' => $session->getId()])
+            ]);
         }
         $this->sessionService->update($session, $request->all());
         return redirect()->route('admin.session.index')->with('success', 'Session successfully updated');

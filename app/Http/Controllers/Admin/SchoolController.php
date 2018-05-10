@@ -14,6 +14,7 @@ class SchoolController extends Controller
      */
     protected $schoolService;
 
+    protected $property = 'school';
     /**
      * SchoolController constructor.
      * @param SchoolRepositoryInterface $schoolService
@@ -25,12 +26,21 @@ class SchoolController extends Controller
 
     public function index(){
         $schools = $this->schoolService->getSchools();
-        return view('admin.school.index', ['schools' => $schools]);
+        return view('admin.index', [
+            'properties' => $schools,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.school.create'),
+            'edit_link' => route('admin.school.edit', ['school' => "?"]),
+            'delete_link' => route('admin.school.delete')
+        ]);
     }
 
     public function store(Request $request){
         if($request->isMethod('GET')) {
-            return view('admin.school.create');
+            return view('admin.create', [
+                'property_name' => $this->property,
+                'create_link' => route('admin.school.create')
+            ]);
         }
         //method is post
         $this->validate($request, [
@@ -42,7 +52,11 @@ class SchoolController extends Controller
 
     public function update(Request $request, School $school){
         if($request->isMethod(Request::METHOD_GET)) {
-            return view('admin.school.edit', ['school' => $school]);
+            return view('admin.edit', [
+                'property_name' => $this->property,
+                'property' => $school,
+                'edit_link' => route('admin.school.edit', ['school' => $school->getId()])
+            ]);
         }
         $this->schoolService->update($school, $request->all());
         return redirect()->route('admin.school.index')->with('success', 'School successfully updated');

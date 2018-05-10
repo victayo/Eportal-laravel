@@ -20,6 +20,8 @@ class ClassController extends Controller
      */
     protected $schoolService;
 
+    protected $property = 'class';
+
     /**
      * ClassController constructor.
      * @param ClassRepositoryInterface $classService
@@ -31,7 +33,13 @@ class ClassController extends Controller
 
     public function index(){
         $classes = $this->classService->getClasses();
-        return view('admin.eportalclass.index', ['classes' => $classes]);
+        return view('admin.index', [
+            'properties' => $classes,
+            'property_name' => $this->property,
+            'create_new_link' => route('admin.class.create'),
+            'edit_link' => route('admin.class.edit', ['class' => '?']),
+            'delete_link' => route('admin.class.delete')
+        ]);
     }
 
     public function store(Request $request){
@@ -42,7 +50,10 @@ class ClassController extends Controller
             $this->classService->create($request->all());
             return redirect()->route('admin.class.index');
         }
-        return view('admin.eportalclass.create');
+        return view('admin.create', [
+            'property_name' => $this->property,
+            'create_link' => route('admin.class.create')
+        ]);
     }
 
     public function update(Request $request, EportalClass $class){
@@ -53,7 +64,11 @@ class ClassController extends Controller
             $this->classService->update($class, $request->all());
             return redirect()->route('admin.class.index');
         }
-        return view('admin.eportalclass.edit', ['class' => $class]);
+        return view('admin.edit', [
+            'property_name' => $this->property,
+            'property' => $class,
+            'edit_link' => route('admin.class.edit', ['class' => $class->getId()])
+        ]);
     }
 
     public function delete(Request $request){
