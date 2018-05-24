@@ -10,6 +10,7 @@
 Route::group(['middleware' => 'web'], function(){
     Route::get('login', 'Auth\LoginController@showLoginForm')->name('admin.login.index');
     Route::post('login', 'Auth\LoginController@login')->name('admin.login');
+    Route::match(['get', 'post'], 'register', 'UserController@registerAdmin');
 });
 
 Route::get('/', 'AdminController@index');

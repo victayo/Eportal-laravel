@@ -81,6 +81,16 @@ class UserService implements UserServiceInterface
             return null;
         }
         DB::commit();
+        //TODO: assign student role
+        return $user;
+    }
+
+    public function registerAdmin(array $userAttributes){
+        $user = $this->createUser($userAttributes);
+        if(!$user){
+            return null;
+        }
+        //TODO: assign admin role
         return $user;
     }
 

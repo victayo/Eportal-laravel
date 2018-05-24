@@ -29,4 +29,19 @@ class UserController extends Controller
     public function registerTeacher(Request $request){
 
     }
+
+    public function registerAdmin(Request $request){
+        if($request->isMethod(Request::METHOD_GET)){
+            return view('admin.auth.register');
+        }
+        $this->validate($request, [
+            'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'last_name' => 'required|string',
+            'username' => 'required|string|unique:users,username',
+            'password' => 'required',
+            'gender' => 'required',
+            'dob' => 'required|date_format:Y-m-d',
+        ]);
+    }
 }
